@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="faf3cdf2-4ae7-4a96-b5fe-1b8b0dc3db00" activeEnvironment="Default" name="node-red-icloud" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:RestService" id="f8087eb1-f606-42dc-b8d5-92ec293981ea" wadlVersion="http://wadl.dev.java.net/2009/02" name="http://127.0.0.1:1880" type="rest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache/><con:endpoints><con:endpoint>http://127.0.0.1:1880</con:endpoint></con:endpoints><con:resource name="Reminders" path="/reminders" id="fd82126f-2c41-4019-b7ee-778498dd15c2"><con:settings/><con:parameters/><con:method name="Reminders" id="ffbf29af-7b45-4717-adb0-d81e9337d5be" method="POST"><con:settings/><con:parameters/><con:request name="Request 1" id="bf59796f-5c15-43c2-9e66-cbb959b96f29" mediaType="application/json" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://127.0.0.1:1880</con:endpoint><con:request>{
+"appleId":"",
+"password":"",
+"reminderList":"Reminders",
+"priority":1,
+"title":"Get a birthday present for Lisa",
+"description":"Call Robert to ask what Lisa likes.",
+"proximity":"ARRIVE",
+"address":"Harrods, 87-135 Brompton Road, London SW1X 7XL",
+"locationName":"Harrods",
+"latitude":"51.4992917",
+"longitude":"-0.162811",
+"alarm":"2017-01-01T00:00:00"
+}</con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method></con:resource></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>
