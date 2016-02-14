@@ -20,7 +20,24 @@ To synchronize reminders with your iPhone you need an iCloud account.
 
 Currently, the following use case is supported.
 
-You can create reminders using the flow create-reminder. Send one of the following requests to the service and a reminder will be generated in your iCloud account. If you have configured your iPhone to synchronize with iCloud, the created reminder will be sent to your phone.
+You can create reminders using the flow create-reminder. Set the Apple ID and the password of your iCloud account in one of the following requests and send the request to the service. A reminder will be generated in your iCloud account. If you have configured your iPhone to synchronize with iCloud, the created reminder will be sent to your phone.
+
+**Request**
+
+| field      | description |
+| ---------- | ----------- |
+|appleId|the Apple ID of your iCloud account|
+|password|the password of your iCloud account|
+|reminderList|the name of the list you want to put the reminder on - If the list does not exist, the reminder is put on an existing list.|
+|priority|from 1 (high) to 3 (low) - No priority is set if the field is missing or its value is null.|
+|title|the title of the reminder|
+|description|the description of the reminder|
+|proximity|defines whether the geofence reminder triggers on arrival or departure, possible values: ARRIVE, DEPART|
+|address|the address of the location|,
+|locationName|the name of the location|,
+|latitude|the latitude of the location the geofence is based on|
+|longitude|the longitude of the location the geofence is based on|
+|alarm|date and time of the alarm - format yyyy-mm-ddThh:mm:ss, e.g. 2017-01-01T00:00:00|
 
 **Sample requests**
 
