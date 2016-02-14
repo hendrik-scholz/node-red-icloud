@@ -39,6 +39,10 @@ Sample request:
 "alarm":"2017-01-01T00:00:00"
 }
 
+## Configuration
+
+Logging to a file is turned off by default. Open the logging subflow to set a file name and activate logging. 
+
 ## Test
 
 A SoapUI project can be found in the test folder to send a test request to the service running on your local machine.
