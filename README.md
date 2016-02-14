@@ -28,7 +28,7 @@ You can create reminders using the flow create-reminder. Set the Apple ID and th
 | ---------- | ----------- |
 |appleId|the Apple ID of your iCloud account|
 |password|the password of your iCloud account|
-|reminderList|the name of the list you want to put the reminder on - If the list does not exist, the reminder is put on an existing list.|
+|reminderList|the name of the list you want to put the reminder on - If the list does not exist, the reminder is put on an existing one.|
 |priority|from 1 (high) to 3 (low) - No priority is set if the field is missing or its value is null.|
 |title|the title of the reminder|
 |description|the description of the reminder|
