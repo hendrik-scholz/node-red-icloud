@@ -14,13 +14,13 @@ The Node-RED flow was developed on the following environment.
 * Node.js version: v0.10.25
 * Node-RED version: v0.13.1
 
-To synchronize reminders with your iPhone you need an iCloud account.
+To create reminders in iCloud and synchronize them with your iPhone you need an iCloud account.
 
 ## Features
 
 Currently, the following use case is supported.
 
-You can create reminders using the flow create-reminder. Set the Apple ID and the password of your iCloud account in one of the following requests and send the request to the service. A reminder will be generated in your iCloud account. If you have configured your iPhone to synchronize with iCloud, the created reminder will be sent to your phone.
+You can create reminders for a specific date and/or geofence. Set the Apple ID and the password of your iCloud account in one of the following requests and send the request to the create-reminder flow. A reminder will be generated in your iCloud account. If you have configured your iPhone to synchronize with iCloud, the created reminder will be sent to your phone.
 
 **Request**
 
