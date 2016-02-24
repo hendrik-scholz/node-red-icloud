@@ -33,7 +33,7 @@ You can create reminders for a specific date and/or geofence. Set the Apple ID a
 |title|the title of the reminder|
 |description|the description of the reminder|
 |proximity|defines whether the geofence reminder triggers on arrival or departure, possible values: ARRIVE, DEPART|
-|address|the address of the location|,
+|address|the address of the location - If the address is not given, the flow tries to determine the address by calling Nominatim using the geo position.|,
 |locationName|the name of the location|,
 |latitude|the latitude of the location the geofence is based on|
 |longitude|the longitude of the location the geofence is based on|
@@ -98,4 +98,4 @@ Logging to a file is turned off by default. Open the logging subflow to set a fi
 
 ## Test
 
-A SoapUI project can be found in the test folder to send test requests to the service running on your local machine.
+A SoapUI project can be found in the test folder to send test requests to the service running on your local machine. Set the your Apple ID and password in the custom properties on project level before running a test.
