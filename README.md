@@ -11,8 +11,8 @@ In order to use the Node-RED flows you need ...
 
 The Node-RED flow was developed on the following environment.
 
-* Node.js version: v4.3.1
-* Node-RED version: v0.13.1
+* Node.js version: v6.9.5
+* Node-RED version: v0.16.2
 
 To create reminders in iCloud and synchronize them with your iPhone you need an iCloud account.
 
