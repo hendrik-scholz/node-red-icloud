@@ -2,7 +2,7 @@
     {
         "id": "747253ec.210a54",
         "type": "subflow",
-        "name": "logging (2)",
+        "name": "logging",
         "info": "",
         "in": [
             {
@@ -361,7 +361,7 @@
         "type": "function",
         "z": "747253ec.210a54",
         "name": "prepare log entry",
-        "func": "/* configure logging */\nvar logging = false;\nvar filename = '/home/nodered/node-red-icloud';\n/* define properties which values should not be logged as plaintext */\nvar list = ['appleId', 'apple_id', 'password'];\n\nif (!logging) {\n    return;\n}\n\n/* function to replace plaintext\n   The list contains elements which should be replaced. */\nfunction replacePlaintext(payload, list) {\n    var k;\n\n    for (k in list) {\n        if (typeof payload !== 'undefined' && payload !== null) {\n            if(payload.hasOwnProperty(list[k])) {\n                payload[list[k]] = 'xxx';\n            }\n        }\n    }\n\n    /* TODO: insert code to replace property values on levels deeper than 1 */\n    \n    return payload;\n}\n\nvar timestamp = {\n    \"filename\" : filename\n};\n\ntimestamp.payload = '\\r' +\n    new Date().toISOString() +\n    ' [' + \n    msg.ldm.process.trace[msg.ldm.process.trace.length - 1].step +\n    ']: ';\n\nvar logMessage = {\n    \"filename\" : filename\n};\n\nlogMessage.payload = {\n    \"url\" : msg.url,\n    \"statuscode\" : msg.statusCode,\n    \"headers\" : msg.headers,\n    \"payload\" : replacePlaintext(msg.payload, list)\n};\n\nreturn [timestamp, logMessage];",
+        "func": "/* configure logging */\nvar logging = false;\nvar filename = '/home/hendrik/node-red-icloud';\n/* define properties which values should not be logged as plaintext */\nvar list = ['appleId', 'apple_id', 'password'];\n\nif (!logging) {\n    return;\n}\n\n/* function to replace plaintext\n   The list contains elements which should be replaced. */\nfunction replacePlaintext(payload, list) {\n    var k;\n\n    for (k in list) {\n        if (typeof payload !== 'undefined' && payload !== null) {\n            if(payload.hasOwnProperty(list[k])) {\n                payload[list[k]] = 'xxx';\n            }\n        }\n    }\n\n    /* TODO: insert code to replace property values on levels deeper than 1 */\n    \n    return payload;\n}\n\nvar timestamp = {\n    \"filename\" : filename\n};\n\ntimestamp.payload = '\\r' +\n    new Date().toISOString() +\n    ' [' + \n    msg.ldm.process.trace[msg.ldm.process.trace.length - 1].step +\n    ']: ';\n\nvar logMessage = {\n    \"filename\" : filename\n};\n\nlogMessage.payload = {\n    \"url\" : msg.url,\n    \"statuscode\" : msg.statusCode,\n    \"headers\" : msg.headers,\n    \"payload\" : replacePlaintext(msg, list)\n};\n\nreturn [timestamp, logMessage];",
         "outputs": "2",
         "noerr": 0,
         "x": 232,
@@ -436,7 +436,7 @@
         "type": "function",
         "z": "fd4d19b8.ff0d28",
         "name": "check",
-        "func": "/* check HTTP response code */\nif (msg.statusCode === 200) {\n    /* recreate message from input */\n    var responseOk = {};\n    responseOk.req = msg.req;\n    responseOk.res = msg.res;\n    responseOk.headers = msg.headers;\n    responseOk.payload = msg.payload;\n    responseOk.ldm = msg.ldm;\n    \n    /* check whether payload is filled */\n    if (responseOk.payload !== '') {\n        return[responseOk, null, null];\n    } else {\n        /* Since a JSON object cannot be created from\n           an empty string, the message is passed on to\n           terminal two. */\n        responseOk.req = msg.req;\n        responseOk.res = msg.res;\n        responseOk.ldm = msg.ldm;\n        \n        return[null, responseOk, null];\n    }\n} else {\n    /* recreate message from input */\n    var responseError = {}\n    responseError.req = msg.req;\n    responseError.res = msg.res;\n    responseError.ldm = msg.ldm;    \n    responseError.statusCode = msg.statusCode;\n\n    /* in case no HTTP response code is given */    \n    if (isNaN(msg.statusCode)) {\n        responseError.statusCode = 500;\n    }\n    \n    responseError.payload = {\n        \"function\" : msg.ldm.process.trace[msg.ldm.process.trace.length - 1].step,\n        \"message\" : msg.payload\n    };\n\n    return[null, null, responseError];\n}",
+        "func": "/* check HTTP response code */\nif (msg.statusCode === 200) {\n    /* recreate message from input */\n    var responseOk = {};\n    responseOk.req = msg.req;\n    responseOk.res = msg.res;\n    responseOk.headers = msg.headers;\n    responseOk.payload = msg.payload;\n    responseOk.ldm = msg.ldm;\n    \n    /* check whether payload is filled */\n    if (responseOk.payload !== '') {\n        return[responseOk, null, null];\n    } else {\n        /* Since a JSON object cannot be created from\n           an empty string, the message is passed on to\n           terminal two. */\n        responseOk.req = msg.req;\n        responseOk.res = msg.res;\n        responseOk.ldm = msg.ldm;\n        \n        return[null, responseOk, null];\n    }\n} else {\n    /* recreate message from input */\n    var responseError = {}\n    responseError.req = msg.req;\n    responseError.res = msg.res;\n    responseError.ldm = msg.ldm;    \n    responseError.statusCode = msg.statusCode;\n\n    /* in case no HTTP response code is given */    \n    if (isNaN(msg.statusCode)) {\n        responseError.statusCode = 500;\n    }\n    \n    /*responseError.payload = {\n        \"function\" : msg.ldm.process.trace[msg.ldm.process.trace.length - 1].step,\n        \"message\" : msg.payload\n    };*/\n\n    responseError.payload = msg.ldm;\n\n    return[null, null, responseError];\n}",
         "outputs": "3",
         "noerr": 0,
         "x": 171,
@@ -478,7 +478,7 @@
     {
         "id": "747253ec.210a54",
         "type": "subflow",
-        "name": "logging (2)",
+        "name": "logging",
         "info": "",
         "in": [
             {
@@ -837,7 +837,7 @@
         "type": "function",
         "z": "747253ec.210a54",
         "name": "prepare log entry",
-        "func": "/* configure logging */\nvar logging = false;\nvar filename = '/home/nodered/node-red-icloud';\n/* define properties which values should not be logged as plaintext */\nvar list = ['appleId', 'apple_id', 'password'];\n\nif (!logging) {\n    return;\n}\n\n/* function to replace plaintext\n   The list contains elements which should be replaced. */\nfunction replacePlaintext(payload, list) {\n    var k;\n\n    for (k in list) {\n        if (typeof payload !== 'undefined' && payload !== null) {\n            if(payload.hasOwnProperty(list[k])) {\n                payload[list[k]] = 'xxx';\n            }\n        }\n    }\n\n    /* TODO: insert code to replace property values on levels deeper than 1 */\n    \n    return payload;\n}\n\nvar timestamp = {\n    \"filename\" : filename\n};\n\ntimestamp.payload = '\\r' +\n    new Date().toISOString() +\n    ' [' + \n    msg.ldm.process.trace[msg.ldm.process.trace.length - 1].step +\n    ']: ';\n\nvar logMessage = {\n    \"filename\" : filename\n};\n\nlogMessage.payload = {\n    \"url\" : msg.url,\n    \"statuscode\" : msg.statusCode,\n    \"headers\" : msg.headers,\n    \"payload\" : replacePlaintext(msg.payload, list)\n};\n\nreturn [timestamp, logMessage];",
+        "func": "/* configure logging */\nvar logging = false;\nvar filename = '/home/hendrik/node-red-icloud';\n/* define properties which values should not be logged as plaintext */\nvar list = ['appleId', 'apple_id', 'password'];\n\nif (!logging) {\n    return;\n}\n\n/* function to replace plaintext\n   The list contains elements which should be replaced. */\nfunction replacePlaintext(payload, list) {\n    var k;\n\n    for (k in list) {\n        if (typeof payload !== 'undefined' && payload !== null) {\n            if(payload.hasOwnProperty(list[k])) {\n                payload[list[k]] = 'xxx';\n            }\n        }\n    }\n\n    /* TODO: insert code to replace property values on levels deeper than 1 */\n    \n    return payload;\n}\n\nvar timestamp = {\n    \"filename\" : filename\n};\n\ntimestamp.payload = '\\r' +\n    new Date().toISOString() +\n    ' [' + \n    msg.ldm.process.trace[msg.ldm.process.trace.length - 1].step +\n    ']: ';\n\nvar logMessage = {\n    \"filename\" : filename\n};\n\nlogMessage.payload = {\n    \"url\" : msg.url,\n    \"statuscode\" : msg.statusCode,\n    \"headers\" : msg.headers,\n    \"payload\" : replacePlaintext(msg, list)\n};\n\nreturn [timestamp, logMessage];",
         "outputs": "2",
         "noerr": 0,
         "x": 232,
@@ -878,42 +878,10 @@
         "method": "post",
         "swaggerDoc": "",
         "x": 160,
-        "y": 200,
+        "y": 140,
         "wires": [
             [
                 "df9ff692.c43de"
-            ]
-        ]
-    },
-    {
-        "id": "fc30f0e3.2ff29",
-        "type": "function",
-        "z": "3aed4340.8f7d1c",
-        "name": "prepare login request",
-        "func": "/* recreate message from input */\nvar loginRequest = {};\nloginRequest.req = msg.req;\nloginRequest.res = msg.res;\nloginRequest.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"step\" : \"login\",\n    \"timestamp\" : new Date().getTime()\n}\nloginRequest.ldm.process.trace.push(trace);\n\n/* HTTP header */\nloginRequest.headers = {\n    \"origin\" : msg.ldm.header.origin\n};\n\n/* payload */\nloginRequest.payload = {\n    \"apple_id\" : msg.ldm.header.appleId,\n    \"password\" : msg.ldm.header.password,\n    \"extended_login\" : false\n};\n\nreturn loginRequest;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 180,
-        "y": 800,
-        "wires": [
-            [
-                "17e26f5.89c3011"
-            ]
-        ]
-    },
-    {
-        "id": "2505e76d.6fa77",
-        "type": "http request",
-        "z": "3aed4340.8f7d1c",
-        "name": "iCloud login",
-        "method": "POST",
-        "ret": "txt",
-        "url": "https://setup.icloud.com/setup/ws/1/login",
-        "x": 149,
-        "y": 862,
-        "wires": [
-            [
-                "c8f34f86.3f9928"
             ]
         ]
     },
@@ -922,11 +890,11 @@
         "type": "function",
         "z": "3aed4340.8f7d1c",
         "name": "prepare reminder request",
-        "func": "/* recreate message from input */\nvar reminderRequest = {};\nreminderRequest.req = msg.req;\nreminderRequest.res = msg.res;\nreminderRequest.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"step\" : \"prepare reminder request\",\n    \"timestamp\" : new Date().getTime()\n}\nreminderRequest.ldm.process.trace.push(trace);\n\n/* map priority values */\nvar priorityMap = {\n  \"1\" : 1,\n  \"2\" : 5,\n  \"3\" : 9,\n  null : null\n};\n\n/* function to generate guid */\nfunction generateGuid() {\n    var guid = '';\n\n    for (var i = 0; i < 32; i++) {\n        if (i === 8 || i === 12 || i === 16 || i === 20) {\n            guid += \"-\"\n        }\n\n        guid += Math.floor(Math.random()*0xF).toString(0xF);\n    }\n\n    return guid;\n}\n\n/* function to format a date */\nfunction formatDate (dateString) {\n    var dateArray = [\n        parseInt(dateString.substring(0, 10).replace(/-/g, '')),\n        parseInt(dateString.substring(0, 4)),\n        parseInt(dateString.substring(5, 7)),\n        parseInt(dateString.substring(8, 10)),\n        parseInt(dateString.substring(11, 13)),\n        parseInt(dateString.substring(14, 16)),\n        0];\n    \n    return dateArray;\n}\n\n/* gets guid of list by given name */\nvar lists = msg.payload.Collections;\nfor (var k in lists) {\n    if (lists[k].title === msg.ldm.tasklist[0].title) {\n        reminderRequest.ldm.tasklist[0].guid = lists[k].guid;\n        break;\n    }\n    \n    /* If the list the reminder should be put on to does not\n       exist, the reminder is put on one of the existing lists. */\n}\n\n/* create URL */\nvar url = msg.ldm.header.remindersurl +\n        '/rd/reminders/' +\n        msg.ldm.tasklist[0].guid +\n        '?' +\n        'usertz='+ msg.ldm.header.usertz +\n        '&lang=' + msg.ldm.header.languageCode +\n        '&dsid=' + msg.ldm.header.dsid;\n\n/* set URL */\nreminderRequest.url = url;\n\n/* HTTP header */\nreminderRequest.headers = {\n    \"origin\" : msg.ldm.header.origin,\n    \"cookie\" : msg.ldm.header.sessionCookie\n};\n\n/* payload */\nreminderRequest.payload = {\"Reminders\": {\n   \"guid\": generateGuid(),\n   \"pGuid\": msg.ldm.tasklist[0].guid,\n   \"etag\": \"C=42@U=\" + generateGuid(),\n   \"createdDateExtended\": 475847804,\n   \"priority\": priorityMap[msg.ldm.tasklist[0].tasks[0].priority],\n   \"completedDate\": null,\n   \"order\": 475847804,\n   \"title\": msg.ldm.tasklist[0].tasks[0].title,\n   \"description\": msg.ldm.tasklist[0].tasks[0].description,\n   \"dueDate\": null,\n   \"dueDateIsAllDay\": false,\n   \"startDate\": null,\n   \"startDateIsAllDay\": true,\n   \"startDateTz\": null,\n   \"recurrence\": null,\n   \"alarms\": [{\n      \"messageType\":\"message\",\n      \"onDate\": null,\n\t  \"measurement\": null,\n      \"description\": \"Reminder\",\n      \"guid\": generateGuid(),\n      \"isLocationBased\": true,\n      \"proximity\": msg.ldm.tasklist[0].tasks[0].location.proximity,\n      \"structuredLocation\": null\n   }]\n}};\n\n/* if an alarm is set */\nif (undefined !== msg.ldm.tasklist[0].tasks[0].alarm) {\n    var formattedAlarm = formatDate(msg.ldm.tasklist[0].tasks[0].alarm);\n    \n    reminderRequest.payload.Reminders.dueDate = formattedAlarm;\n    reminderRequest.payload.Reminders.startDate = formattedAlarm;\n    reminderRequest.payload.Reminders.alarms[0].onDate = formattedAlarm;\n    reminderRequest.payload.Reminders.startDateIsAllDay = false;\n    reminderRequest.payload.Reminders.startDateTz = msg.ldm.header.usertz;\n}\n\n/* map location only if latitude and longitude is given */\nif (undefined !== msg.ldm.tasklist[0].tasks[0].location.latitude &&\n    undefined !== msg.ldm.tasklist[0].tasks[0].location.longitude) {\n    reminderRequest.payload.Reminders.alarms[0].structuredLocation = {};\n    reminderRequest.payload.Reminders.alarms[0].structuredLocation.\n        address = msg.ldm.tasklist[0].tasks[0].location.address;\n    reminderRequest.payload.Reminders.alarms[0].structuredLocation.\n        latitude = msg.ldm.tasklist[0].tasks[0].location.latitude;\n    reminderRequest.payload.Reminders.alarms[0].structuredLocation.\n        longitude = msg.ldm.tasklist[0].tasks[0].location.longitude;\n    reminderRequest.payload.Reminders.alarms[0].structuredLocation.\n        locationName = msg.ldm.tasklist[0].tasks[0].location.name;\n}\n\nreturn reminderRequest;",
+        "func": "/* recreate message from input */\nvar reminderRequest = {};\nreminderRequest.req = msg.req;\nreminderRequest.res = msg.res;\nreminderRequest.ldm = msg.ldm;\nreminderRequest.ldm.header = msg.payload.header;\n\n/* set values for tracing */\nvar trace = {\n    \"step\": \"prepare reminder request\",\n    \"timestamp\": new Date().getTime()\n};\nreminderRequest.ldm.process.trace.push(trace);\n\n/* map priority values */\nvar priorityMap = {\n  \"1\" : 1,\n  \"2\" : 5,\n  \"3\" : 9,\n  null : null\n};\n\n/* function to generate guid */\nfunction generateGuid() {\n    var guid = '';\n\n    for (var i = 0; i < 32; i++) {\n        if (i === 8 || i === 12 || i === 16 || i === 20) {\n            guid += \"-\";\n        }\n\n        guid += Math.floor(Math.random()*0xF).toString(0xF);\n    }\n\n    return guid;\n}\n\n/* function to format a date */\nfunction formatDate (dateString) {\n    var dateArray = [\n        parseInt(dateString.substring(0, 10).replace(/-/g, '')),\n        parseInt(dateString.substring(0, 4)),\n        parseInt(dateString.substring(5, 7)),\n        parseInt(dateString.substring(8, 10)),\n        parseInt(dateString.substring(11, 13)),\n        parseInt(dateString.substring(14, 16)),\n        0];\n    \n    return dateArray;\n}\n\n/* gets guid of list by given name */\nvar lists = msg.payload.tasklist;\nfor (var k in lists) {\n    if (lists[k].title === reminderRequest.ldm.tasklist[0].title) {\n        reminderRequest.ldm.tasklist[0].guid = lists[k].guid;\n        break;\n    }\n    \n    /* If the list the reminder should be put on to does not\n       exist, the reminder is put on one of the existing lists. */\n}\n\n/* create URL */\nvar url = msg.ldm.header.remindersurl +\n          '/rd/reminders/' +\n          msg.ldm.tasklist[0].guid +\n          '?' +\n          'usertz='+ msg.ldm.header.usertz +\n          '&lang=' + msg.ldm.header.languageCode +\n          '&dsid=' + msg.ldm.header.dsid;\n\n/* set URL */\nreminderRequest.url = url;\n\n/* HTTP header */\nreminderRequest.headers = {\n    \"origin\": msg.ldm.header.origin,\n    \"cookie\": msg.ldm.header.sessionCookie\n};\n\n/* payload */\nreminderRequest.payload = {\"Reminders\": {\n   \"guid\": generateGuid(),\n   \"pGuid\": reminderRequest.ldm.tasklist[0].guid,\n   \"etag\": \"C=42@U=\" + generateGuid(),\n   \"createdDateExtended\": 475847804,\n   \"priority\": priorityMap[msg.ldm.tasklist[0].tasks[0].priority],\n   \"completedDate\": null,\n   \"order\": 475847804,\n   \"title\": msg.ldm.tasklist[0].tasks[0].title,\n   \"description\": msg.ldm.tasklist[0].tasks[0].description,\n   \"dueDate\": null,\n   \"dueDateIsAllDay\": false,\n   \"startDate\": null,\n   \"startDateIsAllDay\": true,\n   \"startDateTz\": null,\n   \"recurrence\": null,\n   \"alarms\": [{\n      \"messageType\":\"message\",\n      \"onDate\": null,\n\t  \"measurement\": null,\n      \"description\": \"Reminder\",\n      \"guid\": generateGuid(),\n      \"isLocationBased\": true,\n      \"proximity\": msg.ldm.tasklist[0].tasks[0].location.proximity,\n      \"structuredLocation\": null\n   }]\n}};\n\n/* if an alarm is set */\nif (undefined !== msg.ldm.tasklist[0].tasks[0].alarm) {\n    var formattedAlarm = formatDate(msg.ldm.tasklist[0].tasks[0].alarm);\n    \n    reminderRequest.payload.Reminders.dueDate = formattedAlarm;\n    reminderRequest.payload.Reminders.startDate = formattedAlarm;\n    reminderRequest.payload.Reminders.alarms[0].onDate = formattedAlarm;\n    reminderRequest.payload.Reminders.startDateIsAllDay = false;\n    reminderRequest.payload.Reminders.startDateTz = msg.ldm.header.usertz;\n}\n\n/* map location only if latitude and longitude is given */\nif (undefined !== msg.ldm.tasklist[0].tasks[0].location.latitude &&\n    undefined !== msg.ldm.tasklist[0].tasks[0].location.longitude) {\n    reminderRequest.payload.Reminders.alarms[0].structuredLocation = {};\n    reminderRequest.payload.Reminders.alarms[0].structuredLocation.\n        address = msg.ldm.tasklist[0].tasks[0].location.address;\n    reminderRequest.payload.Reminders.alarms[0].structuredLocation.\n        latitude = msg.ldm.tasklist[0].tasks[0].location.latitude;\n    reminderRequest.payload.Reminders.alarms[0].structuredLocation.\n        longitude = msg.ldm.tasklist[0].tasks[0].location.longitude;\n    reminderRequest.payload.Reminders.alarms[0].structuredLocation.\n        locationName = msg.ldm.tasklist[0].tasks[0].location.name;\n}\n\nreturn reminderRequest;",
         "outputs": 1,
         "noerr": 0,
-        "x": 190,
-        "y": 1440,
+        "x": 170,
+        "y": 880,
         "wires": [
             [
                 "517acb22.e1eb8c"
@@ -941,43 +909,11 @@
         "method": "POST",
         "ret": "txt",
         "url": "",
-        "x": 190,
-        "y": 1500,
+        "x": 170,
+        "y": 960,
         "wires": [
             [
                 "2232f3d5.bb657c"
-            ]
-        ]
-    },
-    {
-        "id": "e4e95021.f8332",
-        "type": "function",
-        "z": "3aed4340.8f7d1c",
-        "name": "prepare logout request",
-        "func": "/* recreate message from input */\nvar logoutRequest = {};\nlogoutRequest.req = msg.req;\nlogoutRequest.res = msg.res;\nlogoutRequest.ldm = msg.ldm;\nlogoutRequest.payload = {};\n\n/* set values for tracing */\nvar trace = {\n    \"step\" : \"prepare logout request\",\n    \"timestamp\" : new Date().getTime()\n}\nlogoutRequest.ldm.process.trace.push(trace);\n\n/* HTTP header */\nlogoutRequest.headers = {\n    \"origin\" : msg.ldm.header.origin,\n    \"cookie\" : msg.ldm.header.sessionCookie\n};\n\nreturn logoutRequest;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 189,
-        "y": 1719,
-        "wires": [
-            [
-                "d3e86d19.cdb1a8"
-            ]
-        ]
-    },
-    {
-        "id": "8d14ff12.97c29",
-        "type": "http request",
-        "z": "3aed4340.8f7d1c",
-        "name": "iCloud logout",
-        "method": "POST",
-        "ret": "txt",
-        "url": "https://setup.icloud.com/setup/ws/1/logout",
-        "x": 160,
-        "y": 1780,
-        "wires": [
-            [
-                "9a5924b8.619388"
             ]
         ]
     },
@@ -986,8 +922,8 @@
         "type": "http response",
         "z": "3aed4340.8f7d1c",
         "name": "reminder response",
-        "x": 790,
-        "y": 1980,
+        "x": 730,
+        "y": 1200,
         "wires": []
     },
     {
@@ -995,11 +931,11 @@
         "type": "function",
         "z": "3aed4340.8f7d1c",
         "name": "prepare reminder response",
-        "func": "/* recreate message from input */\nvar response = {};\nresponse.req = msg.req;\nresponse.res = msg.res;\nresponse.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"step\" : \"prepare reminder response\",\n    \"timestamp\" : new Date().getTime()\n}\nresponse.ldm.process.trace.push(trace);\n\nif (null === msg.ldm.process.exception) {\n    response.payload = {\n        \"success\" : true\n    };\n} else {\n    /* If the flow made it to this point,\n       a reminder was created. Just create\n       a warning. */\n    response.payload = {\n        \"success\" : false,\n        \"function\" : msg.ldm.process.exceptionsource,\n        \"message\" : msg.ldm.process.exception\n    };\n}\n\nresponse.ldm.process.durationInMs = \n    msg.ldm.process.trace[msg.ldm.process.trace.length - 1].timestamp - msg.ldm.process.trace[0].timestamp\n\nreturn response;",
+        "func": "/* recreate message from input */\nvar response = {};\nresponse.req = msg.req;\nresponse.res = msg.res;\nresponse.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"step\": \"prepare reminder response\",\n    \"timestamp\": new Date().getTime()\n};\nresponse.ldm.process.trace.push(trace);\n\nif (undefined === msg.ldm.process.errors) {\n    response.payload = {\n        \"success\": true\n    };\n} else {\n    response.payload = msg.ldm.process.errors;\n}\n\n/* determine process duration */\nresponse.ldm.process.durationInMs = \n    msg.ldm.process.trace[msg.ldm.process.trace.length - 1].timestamp - msg.ldm.process.trace[0].timestamp;\n\nresponse.headers = {\n    \"Access-Control-Allow-Origin\": '*'\n};\n\nreturn response;",
         "outputs": 1,
         "noerr": 0,
-        "x": 200,
-        "y": 1980,
+        "x": 180,
+        "y": 1040,
         "wires": [
             [
                 "e6a01c86.7d7f6"
@@ -1011,24 +947,11 @@
         "type": "subflow:747253ec.210a54",
         "z": "3aed4340.8f7d1c",
         "name": "logging",
-        "x": 129,
-        "y": 602,
+        "x": 140,
+        "y": 480,
         "wires": [
             [
-                "fc30f0e3.2ff29"
-            ]
-        ]
-    },
-    {
-        "id": "17e26f5.89c3011",
-        "type": "subflow:747253ec.210a54",
-        "z": "3aed4340.8f7d1c",
-        "name": "logging",
-        "x": 469,
-        "y": 802,
-        "wires": [
-            [
-                "2505e76d.6fa77"
+                "40eea578.fc945c"
             ]
         ]
     },
@@ -1037,24 +960,11 @@
         "type": "subflow:747253ec.210a54",
         "z": "3aed4340.8f7d1c",
         "name": "logging",
-        "x": 470,
-        "y": 1440,
+        "x": 480,
+        "y": 880,
         "wires": [
             [
                 "3d3cca0d.edd3a6"
-            ]
-        ]
-    },
-    {
-        "id": "d3e86d19.cdb1a8",
-        "type": "subflow:747253ec.210a54",
-        "z": "3aed4340.8f7d1c",
-        "name": "logging",
-        "x": 470,
-        "y": 1720,
-        "wires": [
-            [
-                "8d14ff12.97c29"
             ]
         ]
     },
@@ -1063,25 +973,9 @@
         "type": "subflow:747253ec.210a54",
         "z": "3aed4340.8f7d1c",
         "name": "logging",
-        "x": 470,
-        "y": 1980,
+        "x": 480,
+        "y": 1040,
         "wires": [
-            [
-                "ba6057af.a3a548"
-            ]
-        ]
-    },
-    {
-        "id": "c8f34f86.3f9928",
-        "type": "subflow:fd4d19b8.ff0d28",
-        "z": "3aed4340.8f7d1c",
-        "name": "error handling",
-        "x": 489,
-        "y": 862,
-        "wires": [
-            [
-                "a22462e1.3cc588"
-            ],
             [
                 "ba6057af.a3a548"
             ]
@@ -1092,24 +986,8 @@
         "type": "subflow:fd4d19b8.ff0d28",
         "z": "3aed4340.8f7d1c",
         "name": "error handling",
-        "x": 490,
-        "y": 1500,
-        "wires": [
-            [
-                "e4e95021.f8332"
-            ],
-            [
-                "ba6057af.a3a548"
-            ]
-        ]
-    },
-    {
-        "id": "9a5924b8.619388",
-        "type": "subflow:fd4d19b8.ff0d28",
-        "z": "3aed4340.8f7d1c",
-        "name": "error handling",
-        "x": 490,
-        "y": 1779,
+        "x": 500,
+        "y": 960,
         "wires": [
             [
                 "b6056420.347c3"
@@ -1124,11 +1002,11 @@
         "type": "function",
         "z": "3aed4340.8f7d1c",
         "name": "save input to LDM",
-        "func": "msg.ldm = {\n    \"process\" : {\n        \"trace\" : [{\n            \"step\": \"save input to LDM\",\n            \"timestamp\" : new Date().getTime()\n        }],\n        \"durationInMs\" : null,\n        \"exception\" : null,\n\t    \"exceptionsource\" : null\n    }\n}\n\n/* function to create error messages */\nfunction createErrorMessage(message) {\n    var error = {};\n    error.req = msg.req;\n    error.res = msg.res;\n    error.ldm = msg.ldm;\n    error.statusCode = 400;\n    error.payload = message;\n\n    return error;\n}\n\n/* check input */\nif (undefined === msg.payload.reminderList) {\n    /* reminderList missing */\n    return [null, null, createErrorMessage('The element reminderList is missing.')];\n} else if (undefined === msg.payload.title) {\n    /* title missing */\n    return [null, null, createErrorMessage('The element title is missing.')];\n} else if ((undefined === msg.payload.latitude &&\n            undefined === msg.payload.longitude) &&\n           undefined === msg.payload.alarm) {\n    /* alarm missing - mandatory if no geoposition is given */\n    return [null, null, createErrorMessage('One or more elements are missing ' + \n                        '(latitude, longitude, alarm).')];\n} else if ((undefined !== msg.payload.latitude &&\n            undefined !== msg.payload.longitude) &&\n           undefined === msg.payload.proximity) {\n    /* proximity missing - mandatory if a geoposition is given */\n    return [null, null, createErrorMessage('The element proximity is missing.')];\n} else if (undefined === msg.payload.latitude &&\n           undefined !== msg.payload.longitude) {\n    /* latitude - mandatory if no alarm is given */\n    return [null, null, createErrorMessage('The element latitude is missing.')];\n} else if (undefined !== msg.payload.latitude &&\n           undefined === msg.payload.longitude) {\n    /* longitude - mandatory if no alarm is given */\n    return [null, null, createErrorMessage('The element longitude is missing.')];\n}\n\n/* save input to LDM */\nmsg.ldm = {\n    \"process\" : {\n        \"trace\" : [{\n            \"step\": \"save input to LDM\",\n            \"timestamp\" : new Date().getTime()\n        }],\n        \"durationInMs\" : null,\n        \"exception\" : null,\n\t    \"exceptionsource\" : null\n    },\n    \"header\" : {\n        \"origin\" : \"https://www.icloud.com\",\n        \"userAgent\" : \"node-red-icloud/1.2.0 (Node-RED)\",\n        \"appleId\" : msg.payload.appleId,\n        \"password\" : msg.payload.password,\n        \"sessionCookie\" : null,\n        \"remindersurl\" : null,\n        \"languageCode\" : null,\n        \"dsid\" : null,\n    \t\"usertz\" : null\n    },\n    \"tasklist\" : [{\n        \"guid\" : null,\n        \"title\" : msg.payload.reminderList,\n        \"color\" : null,\n        \"tasks\" : [{\n            \"guid\" : null,\n            \"title\" : msg.payload.title,\n            \"description\" : msg.payload.description,\n            \"priority\" : msg.payload.priority,\n\t    \"alarm\" : msg.payload.alarm,\n\t    \"location\" : {\n\t\t\"name\" : msg.payload.locationName,\n\t\t\"address\" : msg.payload.address,\n\t\t\"latitude\" : msg.payload.latitude,\n\t\t\"longitude\" : msg.payload.longitude,\n\t\t\"proximity\" : msg.payload.proximity\n\t    }\n        }]\n    }]\n};\n\n/* If a geoposition is given but the address is missing, call Nominatim\n   to determine the address */\nif (undefined !== msg.ldm.tasklist[0].tasks[0].location.latitude &&\n    undefined !== msg.ldm.tasklist[0].tasks[0].location.longitude &&\n    undefined === msg.ldm.tasklist[0].tasks[0].location.address) {\n    msg.ldm.process.step = 'Nominatim request';\n    msg.ldm.process.step = new Date().getTime();\n        \n    var nominatimRequest = {};\n    nominatimRequest.req = msg.req;\n    nominatimRequest.res = msg.res;\n    nominatimRequest.ldm = msg.ldm;\n    \n    nominatimRequest.url = \n        'http://nominatim.openstreetmap.org/reverse?format=json' +\n        '&lat=' + msg.ldm.tasklist[0].tasks[0].location.latitude +\n        '&lon=' + msg.ldm.tasklist[0].tasks[0].location.longitude;\n\n    nominatimRequest.headers = {\n        \"User-Agent\" : msg.ldm.header.userAgent\n    }\n\n    return [null, nominatimRequest, null];\n} else {\n    return [msg, null, null];\n}",
+        "func": "var output = {};\noutput.req = msg.req;\noutput.res = msg.res;\noutput.payload = msg.payload;\n\n/* function to create error messages */\nfunction createErrorMessage(message) {\n    var error = {};\n    error.req = msg.req;\n    error.res = msg.res;\n    error.ldm = msg.ldm;\n    error.statusCode = 400;\n    error.payload = message;\n\n    return error;\n}\n\n/* check input */\nif ((undefined === msg.payload.appleId || msg.payload.appleId.length === 0) ||\n    (undefined === msg.payload.password || msg.payload.password.length === 0)) {\n    /* appleId or password undefined or empty */\n    return [null, null, createErrorMessage('One or more elements are missing ' + \n                        '(appleId, password).')];\n} else if (undefined === msg.payload.reminderList) {\n    /* reminderList missing */\n    return [null, null, createErrorMessage('The element reminderList is missing.')];\n} else if (undefined === msg.payload.title) {\n    /* title missing */\n    return [null, null, createErrorMessage('The element title is missing.')];\n} else if ((undefined === msg.payload.latitude &&\n            undefined === msg.payload.longitude) &&\n           undefined === msg.payload.alarm) {\n    /* alarm missing - mandatory if no geoposition is given */\n    return [null, null, createErrorMessage('One or more elements are missing ' + \n                        '(latitude, longitude, alarm).')];\n} else if ((undefined !== msg.payload.latitude &&\n            undefined !== msg.payload.longitude) &&\n           undefined === msg.payload.proximity) {\n    /* proximity missing - mandatory if a geoposition is given */\n    return [null, null, createErrorMessage('The element proximity is missing.')];\n} else if (undefined === msg.payload.latitude &&\n           undefined !== msg.payload.longitude) {\n    /* latitude - mandatory if no alarm is given */\n    return [null, null, createErrorMessage('The element latitude is missing.')];\n} else if (undefined !== msg.payload.latitude &&\n           undefined === msg.payload.longitude) {\n    /* longitude - mandatory if no alarm is given */\n    return [null, null, createErrorMessage('The element longitude is missing.')];\n}\n\n/* save input to LDM */\noutput.ldm = {\n    \"process\": {\n        \"trace\": [{\n            \"step\": \"save input to LDM\",\n            \"timestamp\": new Date().getTime()\n        }],\n        \"durationInMs\" : null\n    },\n    \"header\": {\n        \"origin\": \"https://www.icloud.com\",\n        \"userAgent\": \"node-red-icloud/1.4.0 (Node-RED)\",\n        \"appleId\": msg.payload.appleId,\n        \"password\": msg.payload.password,\n        \"list\": msg.payload.reminderList,\n        \"sessionCookie\": null,\n        \"remindersurl\": null,\n        \"languageCode\": null,\n        \"dsid\": null,\n    \t\"usertz\": null\n    },\n    \"tasklist\": [{\n        \"guid\": null,\n        \"title\": msg.payload.reminderList,\n        \"color\": null,\n        \"tasks\": [{\n            \"guid\": null,\n            \"title\": msg.payload.title,\n            \"description\": msg.payload.description,\n            \"priority\": msg.payload.priority,\n            \"done\": null,\n\t        \"alarm\": msg.payload.alarm,\n    \t    \"location\": {\n        \t\t\"name\": msg.payload.locationName,\n        \t\t\"address\": msg.payload.address,\n        \t\t\"latitude\": msg.payload.latitude,\n        \t\t\"longitude\": msg.payload.longitude,\n        \t\t\"proximity\": msg.payload.proximity\n    \t    }\n        }]\n    }]\n};\n\n/* If a geoposition is given but the address is missing, call Nominatim\n   to determine the address */\nif (undefined !== msg.payload.latitude &&\n    undefined !== msg.payload.longitude &&\n    undefined === msg.payload.address) {\n\n    var nominatimRequest = {};\n    nominatimRequest.req = msg.req;\n    nominatimRequest.res = msg.res;\n    nominatimRequest.ldm = msg.ldm;\n    \n    nominatimRequest.url = \n        'http://nominatim.openstreetmap.org/reverse?format=json' +\n        '&lat=' + msg.payload.latitude +\n        '&lon=' + msg.payload.longitude;\n\n    nominatimRequest.headers = {\n        \"User-Agent\": msg.ldm.header.userAgent\n    }\n\n    /* set values for tracing */\n    var trace = {\n        \"step\": \"call Nominatim\",\n        \"timestamp\": new Date().getTime()\n    }\n    nominatimRequest.ldm.process.trace.push(trace);\n\n    return [null, nominatimRequest, null];\n} else {\n    return [output, null, null];\n}",
         "outputs": "3",
         "noerr": 0,
         "x": 170,
-        "y": 260,
+        "y": 220,
         "wires": [
             [
                 "c65d57db.997468"
@@ -1142,57 +1020,12 @@
         ]
     },
     {
-        "id": "6a5125cd.573464",
-        "type": "function",
-        "z": "3aed4340.8f7d1c",
-        "name": "prepare startup request",
-        "func": "/* recreate message from input */\nvar startupRequest = {};\nstartupRequest.req = msg.req;\nstartupRequest.res = msg.res;\nstartupRequest.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"step\" : \"prepare startup request\",\n    \"timestamp\" : new Date().getTime()\n}\nstartupRequest.ldm.process.trace.push(trace);\n\n/* create URL */\nvar url = startupRequest.ldm.header.remindersurl +\n        '/rd/startup' +\n        '?' +\n        'usertz=' + msg.ldm.header.usertz +\n        '&lang=' + msg.ldm.header.languageCode +\n        '&dsid=' + msg.ldm.header.dsid;\n\n/* set URL */\nstartupRequest.url = url;\n\n/* HTTP header */\nstartupRequest.headers = {\n    \"origin\" : msg.ldm.header.origin,\n    \"cookie\" : msg.ldm.header.sessionCookie\n};\n\nreturn startupRequest;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 190,
-        "y": 1180,
-        "wires": [
-            [
-                "48dce9da.2d0368"
-            ]
-        ]
-    },
-    {
-        "id": "48dce9da.2d0368",
-        "type": "subflow:747253ec.210a54",
-        "z": "3aed4340.8f7d1c",
-        "name": "logging",
-        "x": 470,
-        "y": 1180,
-        "wires": [
-            [
-                "469f925b.b721cc"
-            ]
-        ]
-    },
-    {
-        "id": "469f925b.b721cc",
-        "type": "http request",
-        "z": "3aed4340.8f7d1c",
-        "name": "iCloud startup",
-        "method": "GET",
-        "ret": "txt",
-        "url": "",
-        "x": 160,
-        "y": 1240,
-        "wires": [
-            [
-                "88bf6bf9.b978c"
-            ]
-        ]
-    },
-    {
         "id": "88bf6bf9.b978c",
         "type": "subflow:fd4d19b8.ff0d28",
         "z": "3aed4340.8f7d1c",
         "name": "error handling",
-        "x": 490,
-        "y": 1240,
+        "x": 500,
+        "y": 800,
         "wires": [
             [
                 "97467c85.971c9"
@@ -1203,66 +1036,6 @@
         ]
     },
     {
-        "id": "18a4862d.20b722",
-        "type": "comment",
-        "z": "3aed4340.8f7d1c",
-        "name": "iCloud login",
-        "info": "-prepares the message for logging in to the iCloud account\n-sends the login message to the iCloud service",
-        "x": 149,
-        "y": 742,
-        "wires": []
-    },
-    {
-        "id": "93481d4a.d6b07",
-        "type": "comment",
-        "z": "3aed4340.8f7d1c",
-        "name": "iCloud startup",
-        "info": "-prepares the message for retrieving values from the iCloud account, e.g.\n the names und guids of the existing reminder lists\n-sends the startup message to the iCloud service",
-        "x": 150,
-        "y": 1060,
-        "wires": []
-    },
-    {
-        "id": "a3fdc703.519a78",
-        "type": "comment",
-        "z": "3aed4340.8f7d1c",
-        "name": "iCloud create",
-        "info": "-prepares the message to create a date and/or geofence reminder\n-sends the creation message to the iCloud service",
-        "x": 150,
-        "y": 1380,
-        "wires": []
-    },
-    {
-        "id": "a90464fe.72d938",
-        "type": "comment",
-        "z": "3aed4340.8f7d1c",
-        "name": "iCloud logout",
-        "info": "-logs out from the iCloud account",
-        "x": 150,
-        "y": 1660,
-        "wires": []
-    },
-    {
-        "id": "710eacd5.bd8dec",
-        "type": "comment",
-        "z": "3aed4340.8f7d1c",
-        "name": "output",
-        "info": "-prepares the output of the service\n-currently, the result of the last operation is returned",
-        "x": 130,
-        "y": 1920,
-        "wires": []
-    },
-    {
-        "id": "4b5d29dc.e2e268",
-        "type": "comment",
-        "z": "3aed4340.8f7d1c",
-        "name": "input",
-        "info": "-receives the input message and does some validation\n\nThe following message is an example for an input message.\n\n{\n\"appleId\":\"\",\n\"password\":\"\",\n\"reminderList\":\"Reminders\",\n\"priority\":1,\n\"title\":\"Get a birthday present for Lisa\",\n\"description\":\"Call Robert to ask what Lisa likes.\",\n\"proximity\":\"ARRIVE\",\n\"address\":\"Harrods, 87-135 Brompton Road, London SW1X 7XL\",\n\"locationName\":\"Harrods\",\n\"latitude\":\"51.4992917\",\n\"longitude\":\"-0.162811\",\n\"alarm\":\"2017-01-01T00:00:00\"\n}",
-        "x": 130,
-        "y": 140,
-        "wires": []
-    },
-    {
         "id": "3c7d49eb.1fa20e",
         "type": "http request",
         "z": "3aed4340.8f7d1c",
@@ -1271,7 +1044,7 @@
         "ret": "txt",
         "url": "",
         "x": 490,
-        "y": 460,
+        "y": 480,
         "wires": [
             [
                 "30091fee.6e11"
@@ -1282,15 +1055,15 @@
         "id": "44c3111.0bd98f",
         "type": "function",
         "z": "3aed4340.8f7d1c",
-        "name": "save Nominatim response",
-        "func": "/* recreate message from input */\nvar response = {};\nresponse.req = msg.req;\nresponse.res = msg.res;\nresponse.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"step\" : \"save Nominatim response\",\n    \"timestamp\" : new Date().getTime()\n}\nresponse.ldm.process.trace.push(trace);\n\nvar addressLine = '';\n\nif (undefined === msg.payload.error) {\n    if (msg.payload.address.country_code === 'ca' ||\n        msg.payload.address.country_code === 'gb' ||\n        msg.payload.address.country_code === 'us') {\n        addressLine =\n            (msg.payload.address.house_number || '') + ' ' +\n            (msg.payload.address.road ||\n                msg.payload.address.pedestrian ||\n                '') + ' ' +\n            (msg.payload.address.city ||\n                msg.payload.address.town || \n                msg.payload.address.village ||\n                msg.payload.address.hamlet ||\n                '') + ' ' +\n            (msg.payload.address.postcode || '');\n    } else {\n        addressLine =\n            (msg.payload.address.road ||\n                msg.payload.address.pedestrian ||\n                '') + ' ' +\n            (msg.payload.address.house_number || '') + ' ' +\n            (msg.payload.address.postcode || '') + ' ' +\n            (msg.payload.address.city ||\n                msg.payload.address.town || \n                msg.payload.address.village ||\n                msg.payload.address.hamlet ||\n                '');\n    }\n}\n\nresponse.ldm.tasklist[0].tasks[0].location.address = addressLine;\n\nreturn response;",
+        "name": "save Nominatim response to LDM",
+        "func": "/* recreate message from input */\nvar response = {};\nresponse.req = msg.req;\nresponse.res = msg.res;\nresponse.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"step\": \"save Nominatim response to LDM\",\n    \"timestamp\": new Date().getTime()\n};\nresponse.ldm.process.trace.push(trace);\n\nvar addressLine = '';\n\nif (undefined === msg.payload.error) {\n    if (msg.payload.address.country_code === 'ca' ||\n        msg.payload.address.country_code === 'gb' ||\n        msg.payload.address.country_code === 'us') {\n        addressLine =\n            (msg.payload.address.house_number || '') + ' ' +\n            (msg.payload.address.road ||\n                msg.payload.address.pedestrian ||\n                '') + ' ' +\n            (msg.payload.address.city ||\n                msg.payload.address.town || \n                msg.payload.address.village ||\n                msg.payload.address.hamlet ||\n                '') + ' ' +\n            (msg.payload.address.postcode || '');\n    } else {\n        addressLine =\n            (msg.payload.address.road ||\n                msg.payload.address.pedestrian ||\n                '') + ' ' +\n            (msg.payload.address.house_number || '') + ' ' +\n            (msg.payload.address.postcode || '') + ' ' +\n            (msg.payload.address.city ||\n                msg.payload.address.town || \n                msg.payload.address.village ||\n                msg.payload.address.hamlet ||\n                '');\n    }\n}\n\nresponse.ldm.tasklist[0].tasks[0].location.address = addressLine;\n\nreturn response;",
         "outputs": 1,
         "noerr": 0,
-        "x": 540,
-        "y": 580,
+        "x": 560,
+        "y": 640,
         "wires": [
             [
-                "fc30f0e3.2ff29"
+                "983a9f26.b1cff"
             ]
         ]
     },
@@ -1301,7 +1074,7 @@
         "name": "call Nominatim",
         "info": "-calls Nominatim to determine the address for a given geoposition",
         "x": 500,
-        "y": 340,
+        "y": 400,
         "wires": []
     },
     {
@@ -1310,7 +1083,7 @@
         "z": "3aed4340.8f7d1c",
         "name": "error handling",
         "x": 500,
-        "y": 520,
+        "y": 560,
         "wires": [
             [
                 "44c3111.0bd98f"
@@ -1326,7 +1099,7 @@
         "z": "3aed4340.8f7d1c",
         "name": "logging",
         "x": 480,
-        "y": 400,
+        "y": 320,
         "wires": [
             [
                 "3c7d49eb.1fa20e"
@@ -1338,8 +1111,8 @@
         "type": "subflow:fd4d19b8.ff0d28",
         "z": "3aed4340.8f7d1c",
         "name": "error handling",
-        "x": 490,
-        "y": 280,
+        "x": 500,
+        "y": 233,
         "wires": [
             [],
             [
@@ -1348,27 +1121,11 @@
         ]
     },
     {
-        "id": "a22462e1.3cc588",
-        "type": "function",
-        "z": "3aed4340.8f7d1c",
-        "name": "save login response to LDM",
-        "func": "/* recreate message from input */\nvar response = {};\nresponse.req = msg.req;\nresponse.res = msg.res;\nresponse.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"step\" : \"save login response to LDM\",\n    \"timestamp\" : new Date().getTime()\n}\nresponse.ldm.process.trace.push(trace);\n\n/* get all cookies from the login response */\nvar cookies = msg.headers['set-cookie'];\nvar sessionCookie = '';\n\nfor (var k in cookies) {\n    sessionCookie += cookies[k].substring(0, cookies[k].indexOf(';') + 1);\n}\n\nresponse.ldm.header.sessionCookie =\n    sessionCookie.substring(0, sessionCookie.lastIndexOf(';'));\n/* get all cookies from login response - end */\n\n/* store property values of the login response */\nresponse.ldm.header.remindersurl = msg.payload.webservices.reminders.url;\nresponse.ldm.header.languageCode = msg.payload.dsInfo.languageCode;\nresponse.ldm.header.dsid = msg.payload.dsInfo.dsid;\n\n/* list of country codes, GMT offsets and time zone names */\nvar codes = {\n    \"AD_GMT+1\" : \"Europe/Andorra\",\n    \"AE_GMT+4\" : \"Asia/Dubai\",\n    \"AF_GMT+4.5\" : \"Asia/Kabul\",\n    \"AG_GMT-4\" : \"America/Antigua\",\n    \"AI_GMT-4\" : \"America/Anguilla\",\n    \"AL_GMT+1\" : \"Europe/Tirane\",\n    \"AM_GMT+4\" : \"Asia/Yerevan\",\n    \"AO_GMT+1\" : \"Africa/Luanda\",\n    \"AQ_GMT\" : \"Antarctica/Troll\",\n    \"AQ_GMT+10\" : \"Antarctica/DumontDUrville\",\n    \"AQ_GMT+12\" : \"Antarctica/McMurdo\",\n    \"AQ_GMT+3\" : \"Antarctica/Syowa\",\n    \"AQ_GMT+5\" : \"Antarctica/Mawson\",\n    \"AQ_GMT+6\" : \"Antarctica/Vostok\",\n    \"AQ_GMT+7\" : \"Antarctica/Davis\",\n    \"AQ_GMT+8\" : \"Antarctica/Casey\",\n    \"AQ_GMT-3\" : \"Antarctica/Palmer\",\n    \"AR_GMT-3\" : \"America/Argentina/Buenos_Aires\",\n    \"AS_GMT-11\" : \"Pacific/Pago_Pago\",\n    \"AT_GMT+1\" : \"Europe/Vienna\",\n    \"AU_GMT+10\" : \"Australia/Brisbane\",\n    \"AU_GMT+10.5\" : \"Australia/Lord_Howe\",\n    \"AU_GMT+11\" : \"Antarctica/Macquarie\",\n    \"AU_GMT+8\" : \"Australia/Perth\",\n    \"AU_GMT+8.75\" : \"Australia/Eucla\",\n    \"AU_GMT+9.5\" : \"Australia/Adelaide\",\n    \"AW_GMT-4\" : \"America/Aruba\",\n    \"AX_GMT+2\" : \"Europe/Mariehamn\",\n    \"AZ_GMT+4\" : \"Asia/Baku\",\n    \"BA_GMT+1\" : \"Europe/Sarajevo\",\n    \"BB_GMT-4\" : \"America/Barbados\",\n    \"BD_GMT+6\" : \"Asia/Dhaka\",\n    \"BE_GMT+1\" : \"Europe/Brussels\",\n    \"BF_GMT\" : \"Africa/Ouagadougou\",\n    \"BG_GMT+2\" : \"Europe/Sofia\",\n    \"BH_GMT+3\" : \"Asia/Bahrain\",\n    \"BI_GMT+2\" : \"Africa/Bujumbura\",\n    \"BJ_GMT+1\" : \"Africa/Porto-Novo\",\n    \"BL_GMT-4\" : \"America/St_Barthelemy\",\n    \"BM_GMT-4\" : \"Atlantic/Bermuda\",\n    \"BN_GMT+8\" : \"Asia/Brunei\",\n    \"BO_GMT-4\" : \"America/La_Paz\",\n    \"BQ_GMT-4\" : \"America/Kralendijk\",\n    \"BR_GMT-2\" : \"America/Noronha\",\n    \"BR_GMT-3\" : \"America/Araguaina\",\n    \"BR_GMT-4\" : \"America/Boa_Vista\",\n    \"BR_GMT-5\" : \"America/Eirunepe\",\n    \"BT_GMT+6\" : \"Asia/Thimphu\",\n    \"BW_GMT+2\" : \"Africa/Gaborone\",\n    \"BY_GMT+3\" : \"Europe/Minsk\",\n    \"BZ_GMT-6\" : \"America/Belize\",\n    \"CA_GMT-3.5\" : \"America/St_Johns\",\n    \"CA_GMT-4\" : \"America/Blanc-Sablon\",\n    \"CA_GMT-5\" : \"America/Atikokan\",\n    \"CA_GMT-6\" : \"America/Rainy_River\",\n    \"CA_GMT-7\" : \"America/Cambridge_Bay\",\n    \"CA_GMT-8\" : \"America/Dawson\",\n    \"CC_GMT+6.5\" : \"Indian/Cocos\",\n    \"CD_GMT+1\" : \"Africa/Kinshasa\",\n    \"CD_GMT+2\" : \"Africa/Lubumbashi\",\n    \"CF_GMT+1\" : \"Africa/Bangui\",\n    \"CG_GMT+1\" : \"Africa/Brazzaville\",\n    \"CH_GMT+1\" : \"Europe/Zurich\",\n    \"CI_GMT\" : \"Africa/Abidjan\",\n    \"CK_GMT-10\" : \"Pacific/Rarotonga\",\n    \"CL_GMT-3\" : \"America/Santiago\",\n    \"CL_GMT-5\" : \"Pacific/Easter\",\n    \"CM_GMT+1\" : \"Africa/Douala\",\n    \"CN_GMT+6\" : \"Asia/Urumqi\",\n    \"CN_GMT+8\" : \"Asia/Shanghai\",\n    \"CO_GMT-5\" : \"America/Bogota\",\n    \"CR_GMT-6\" : \"America/Costa_Rica\",\n    \"CU_GMT-5\" : \"America/Havana\",\n    \"CV_GMT-1\" : \"Atlantic/Cape_Verde\",\n    \"CW_GMT-4\" : \"America/Curacao\",\n    \"CX_GMT+7\" : \"Indian/Christmas\",\n    \"CY_GMT+2\" : \"Asia/Nicosia\",\n    \"CZ_GMT+1\" : \"Europe/Prague\",\n    \"DE_GMT+1\" : \"Europe/Berlin\",\n    \"DJ_GMT+3\" : \"Africa/Djibouti\",\n    \"DK_GMT+1\" : \"Europe/Copenhagen\",\n    \"DM_GMT-4\" : \"America/Dominica\",\n    \"DO_GMT-4\" : \"America/Santo_Domingo\",\n    \"DZ_GMT+1\" : \"Africa/Algiers\",\n    \"EC_GMT-5\" : \"America/Guayaquil\",\n    \"EC_GMT-6\" : \"Pacific/Galapagos\",\n    \"EE_GMT+2\" : \"Europe/Tallinn\",\n    \"EG_GMT+2\" : \"Africa/Cairo\",\n    \"EH_GMT\" : \"Africa/El_Aaiun\",\n    \"ER_GMT+3\" : \"Africa/Asmara\",\n    \"ES_GMT\" : \"Atlantic/Canary\",\n    \"ES_GMT+1\" : \"Europe/Madrid\",\n    \"ET_GMT+3\" : \"Africa/Addis_Ababa\",\n    \"FI_GMT+2\" : \"Europe/Helsinki\",\n    \"FJ_GMT+12\" : \"Pacific/Fiji\",\n    \"FK_GMT-3\" : \"Atlantic/Stanley\",\n    \"FM_GMT+10\" : \"Pacific/Chuuk\",\n    \"FM_GMT+11\" : \"Pacific/Kosrae\",\n    \"FO_GMT\" : \"Atlantic/Faroe\",\n    \"FR_GMT+1\" : \"Europe/Paris\",\n    \"GA_GMT+1\" : \"Africa/Libreville\",\n    \"GB_GMT\" : \"Europe/London\",\n    \"GD_GMT-4\" : \"America/Grenada\",\n    \"GE_GMT+4\" : \"Asia/Tbilisi\",\n    \"GF_GMT-3\" : \"America/Cayenne\",\n    \"GG_GMT\" : \"Europe/Guernsey\",\n    \"GH_GMT\" : \"Africa/Accra\",\n    \"GI_GMT+1\" : \"Europe/Gibraltar\",\n    \"GL_GMT\" : \"America/Danmarkshavn\",\n    \"GL_GMT-1\" : \"America/Scoresbysund\",\n    \"GL_GMT-3\" : \"America/Godthab\",\n    \"GL_GMT-4\" : \"America/Thule\",\n    \"GM_GMT\" : \"Africa/Banjul\",\n    \"GN_GMT\" : \"Africa/Conakry\",\n    \"GP_GMT-4\" : \"America/Guadeloupe\",\n    \"GQ_GMT+1\" : \"Africa/Malabo\",\n    \"GR_GMT+2\" : \"Europe/Athens\",\n    \"GS_GMT-2\" : \"Atlantic/South_Georgia\",\n    \"GT_GMT-6\" : \"America/Guatemala\",\n    \"GU_GMT+10\" : \"Pacific/Guam\",\n    \"GW_GMT\" : \"Africa/Bissau\",\n    \"GY_GMT-4\" : \"America/Guyana\",\n    \"HK_GMT+8\" : \"Asia/Hong_Kong\",\n    \"HN_GMT-6\" : \"America/Tegucigalpa\",\n    \"HR_GMT+1\" : \"Europe/Zagreb\",\n    \"HT_GMT-5\" : \"America/Port-au-Prince\",\n    \"HU_GMT+1\" : \"Europe/Budapest\",\n    \"ID_GMT+7\" : \"Asia/Jakarta\",\n    \"ID_GMT+8\" : \"Asia/Makassar\",\n    \"ID_GMT+9\" : \"Asia/Jayapura\",\n    \"IE_GMT\" : \"Europe/Dublin\",\n    \"IL_GMT+2\" : \"Asia/Jerusalem\",\n    \"IM_GMT\" : \"Europe/Isle_of_Man\",\n    \"IN_GMT+5.5\" : \"Asia/Kolkata\",\n    \"IO_GMT+6\" : \"Indian/Chagos\",\n    \"IQ_GMT+3\" : \"Asia/Baghdad\",\n    \"IR_GMT+3.5\" : \"Asia/Tehran\",\n    \"IS_GMT\" : \"Atlantic/Reykjavik\",\n    \"IT_GMT+1\" : \"Europe/Rome\",\n    \"JE_GMT\" : \"Europe/Jersey\",\n    \"JM_GMT-5\" : \"America/Jamaica\",\n    \"JO_GMT+2\" : \"Asia/Amman\",\n    \"JP_GMT+9\" : \"Asia/Tokyo\",\n    \"KE_GMT+3\" : \"Africa/Nairobi\",\n    \"KG_GMT+6\" : \"Asia/Bishkek\",\n    \"KH_GMT+7\" : \"Asia/Phnom_Penh\",\n    \"KI_GMT+12\" : \"Pacific/Tarawa\",\n    \"KI_GMT+13\" : \"Pacific/Enderbury\",\n    \"KI_GMT+14\" : \"Pacific/Kiritimati\",\n    \"KM_GMT+3\" : \"Indian/Comoro\",\n    \"KN_GMT-4\" : \"America/St_Kitts\",\n    \"KP_GMT+8.5\" : \"Asia/Pyongyang\",\n    \"KR_GMT+9\" : \"Asia/Seoul\",\n    \"KW_GMT+3\" : \"Asia/Kuwait\",\n    \"KY_GMT-5\" : \"America/Cayman\",\n    \"KZ_GMT+5\" : \"Asia/Aqtau\",\n    \"KZ_GMT+6\" : \"Asia/Almaty\",\n    \"LA_GMT+7\" : \"Asia/Vientiane\",\n    \"LB_GMT+2\" : \"Asia/Beirut\",\n    \"LC_GMT-4\" : \"America/St_Lucia\",\n    \"LI_GMT+1\" : \"Europe/Vaduz\",\n    \"LK_GMT+5.5\" : \"Asia/Colombo\",\n    \"LR_GMT\" : \"Africa/Monrovia\",\n    \"LS_GMT+2\" : \"Africa/Maseru\",\n    \"LT_GMT+2\" : \"Europe/Vilnius\",\n    \"LU_GMT+1\" : \"Europe/Luxembourg\",\n    \"LV_GMT+2\" : \"Europe/Riga\",\n    \"LY_GMT+2\" : \"Africa/Tripoli\",\n    \"MA_GMT\" : \"Africa/Casablanca\",\n    \"MC_GMT+1\" : \"Europe/Monaco\",\n    \"MD_GMT+2\" : \"Europe/Chisinau\",\n    \"ME_GMT+1\" : \"Europe/Podgorica\",\n    \"MF_GMT-4\" : \"America/Marigot\",\n    \"MG_GMT+3\" : \"Indian/Antananarivo\",\n    \"MH_GMT+12\" : \"Pacific/Kwajalein\",\n    \"MK_GMT+1\" : \"Europe/Skopje\",\n    \"ML_GMT\" : \"Africa/Bamako\",\n    \"MM_GMT+6.5\" : \"Asia/Rangoon\",\n    \"MN_GMT+7\" : \"Asia/Hovd\",\n    \"MN_GMT+8\" : \"Asia/Choibalsan\",\n    \"MO_GMT+8\" : \"Asia/Macau\",\n    \"MP_GMT+10\" : \"Pacific/Saipan\",\n    \"MQ_GMT-4\" : \"America/Martinique\",\n    \"MR_GMT\" : \"Africa/Nouakchott\",\n    \"MS_GMT-4\" : \"America/Montserrat\",\n    \"MT_GMT+1\" : \"Europe/Malta\",\n    \"MU_GMT+4\" : \"Indian/Mauritius\",\n    \"MV_GMT+5\" : \"Indian/Maldives\",\n    \"MW_GMT+2\" : \"Africa/Blantyre\",\n    \"MX_GMT-5\" : \"America/Cancun\",\n    \"MX_GMT-6\" : \"America/Bahia_Banderas\",\n    \"MX_GMT-7\" : \"America/Chihuahua\",\n    \"MX_GMT-8\" : \"America/Santa_Isabel\",\n    \"MY_GMT+8\" : \"Asia/Kuala_Lumpur\",\n    \"MZ_GMT+2\" : \"Africa/Maputo\",\n    \"NA_GMT+1\" : \"Africa/Windhoek\",\n    \"NC_GMT+11\" : \"Pacific/Noumea\",\n    \"NE_GMT+1\" : \"Africa/Niamey\",\n    \"NF_GMT+11\" : \"Pacific/Norfolk\",\n    \"NG_GMT+1\" : \"Africa/Lagos\",\n    \"NI_GMT-6\" : \"America/Managua\",\n    \"NL_GMT+1\" : \"Europe/Amsterdam\",\n    \"NO_GMT+1\" : \"Europe/Oslo\",\n    \"NP_GMT+5.75\" : \"Asia/Kathmandu\",\n    \"NR_GMT+12\" : \"Pacific/Nauru\",\n    \"NU_GMT-11\" : \"Pacific/Niue\",\n    \"NZ_GMT+12\" : \"Pacific/Auckland\",\n    \"NZ_GMT+12.75\" : \"Pacific/Chatham\",\n    \"OM_GMT+4\" : \"Asia/Muscat\",\n    \"PA_GMT-5\" : \"America/Panama\",\n    \"PE_GMT-5\" : \"America/Lima\",\n    \"PF_GMT-10\" : \"Pacific/Tahiti\",\n    \"PF_GMT-9\" : \"Pacific/Gambier\",\n    \"PF_GMT-9.5\" : \"Pacific/Marquesas\",\n    \"PG_GMT+10\" : \"Pacific/Port_Moresby\",\n    \"PG_GMT+11\" : \"Pacific/Bougainville\",\n    \"PH_GMT+8\" : \"Asia/Manila\",\n    \"PK_GMT+5\" : \"Asia/Karachi\",\n    \"PL_GMT+1\" : \"Europe/Warsaw\",\n    \"PM_GMT-3\" : \"America/Miquelon\",\n    \"PN_GMT-8\" : \"Pacific/Pitcairn\",\n    \"PR_GMT-4\" : \"America/Puerto_Rico\",\n    \"PS_GMT+2\" : \"Asia/Hebron\",\n    \"PT_GMT\" : \"Europe/Lisbon\",\n    \"PT_GMT-1\" : \"Atlantic/Azores\",\n    \"PW_GMT+9\" : \"Pacific/Palau\",\n    \"PY_GMT-4\" : \"America/Asuncion\",\n    \"QA_GMT+3\" : \"Asia/Qatar\",\n    \"RE_GMT+4\" : \"Indian/Reunion\",\n    \"RO_GMT+2\" : \"Europe/Bucharest\",\n    \"RS_GMT+1\" : \"Europe/Belgrade\",\n    \"RU_GMT+10\" : \"Asia/Magadan\",\n    \"RU_GMT+11\" : \"Asia/Srednekolymsk\",\n    \"RU_GMT+12\" : \"Asia/Anadyr\",\n    \"RU_GMT+2\" : \"Europe/Kaliningrad\",\n    \"RU_GMT+3\" : \"Europe/Moscow\",\n    \"RU_GMT+4\" : \"Europe/Samara\",\n    \"RU_GMT+5\" : \"Asia/Yekaterinburg\",\n    \"RU_GMT+6\" : \"Asia/Novosibirsk\",\n    \"RU_GMT+7\" : \"Asia/Krasnoyarsk\",\n    \"RU_GMT+8\" : \"Asia/Chita\",\n    \"RU_GMT+9\" : \"Asia/Khandyga\",\n    \"RW_GMT+2\" : \"Africa/Kigali\",\n    \"SA_GMT+3\" : \"Asia/Riyadh\",\n    \"SB_GMT+11\" : \"Pacific/Guadalcanal\",\n    \"SC_GMT+4\" : \"Indian/Mahe\",\n    \"SD_GMT+3\" : \"Africa/Khartoum\",\n    \"SE_GMT+1\" : \"Europe/Stockholm\",\n    \"SG_GMT+8\" : \"Asia/Singapore\",\n    \"SH_GMT\" : \"Atlantic/St_Helena\",\n    \"SI_GMT+1\" : \"Europe/Ljubljana\",\n    \"SJ_GMT+1\" : \"Arctic/Longyearbyen\",\n    \"SK_GMT+1\" : \"Europe/Bratislava\",\n    \"SL_GMT\" : \"Africa/Freetown\",\n    \"SM_GMT+1\" : \"Europe/San_Marino\",\n    \"SN_GMT\" : \"Africa/Dakar\",\n    \"SO_GMT+3\" : \"Africa/Mogadishu\",\n    \"SR_GMT-3\" : \"America/Paramaribo\",\n    \"SS_GMT+3\" : \"Africa/Juba\",\n    \"ST_GMT\" : \"Africa/Sao_Tome\",\n    \"SV_GMT-6\" : \"America/El_Salvador\",\n    \"SX_GMT-4\" : \"America/Lower_Princes\",\n    \"SY_GMT+2\" : \"Asia/Damascus\",\n    \"SZ_GMT+2\" : \"Africa/Mbabane\",\n    \"TC_GMT-4\" : \"America/Grand_Turk\",\n    \"TD_GMT+1\" : \"Africa/Ndjamena\",\n    \"TF_GMT+5\" : \"Indian/Kerguelen\",\n    \"TG_GMT\" : \"Africa/Lome\",\n    \"TH_GMT+7\" : \"Asia/Bangkok\",\n    \"TJ_GMT+5\" : \"Asia/Dushanbe\",\n    \"TK_GMT+13\" : \"Pacific/Fakaofo\",\n    \"TL_GMT+9\" : \"Asia/Dili\",\n    \"TM_GMT+5\" : \"Asia/Ashgabat\",\n    \"TN_GMT+1\" : \"Africa/Tunis\",\n    \"TO_GMT+13\" : \"Pacific/Tongatapu\",\n    \"TR_GMT+2\" : \"Europe/Istanbul\",\n    \"TT_GMT-4\" : \"America/Port_of_Spain\",\n    \"TV_GMT+12\" : \"Pacific/Funafuti\",\n    \"TW_GMT+8\" : \"Asia/Taipei\",\n    \"TZ_GMT+3\" : \"Africa/Dar_es_Salaam\",\n    \"UA_GMT+2\" : \"Europe/Kiev\",\n    \"UG_GMT+3\" : \"Africa/Kampala\",\n    \"UM_GMT-10\" : \"Pacific/Johnston\",\n    \"UM_GMT+12\" : \"Pacific/Wake\",\n    \"UM_GMT-11\" : \"Pacific/Midway\",\n    \"US_GMT-10\" : \"America/Adak\",\n    \"US_GMT-5\" : \"America/Detroit\",\n    \"US_GMT-6\" : \"America/Chicago\",\n    \"US_GMT-7\" : \"America/Boise\",\n    \"US_GMT-8\" : \"America/Los_Angeles\",\n    \"US_GMT-9\" : \"America/Anchorage\",\n    \"UY_GMT-3\" : \"America/Montevideo\",\n    \"UZ_GMT+5\" : \"Asia/Samarkand\",\n    \"VA_GMT+1\" : \"Europe/Vatican\",\n    \"VC_GMT-4\" : \"America/St_Vincent\",\n    \"VE_GMT-4.5\" : \"America/Caracas\",\n    \"VG_GMT-4\" : \"America/Tortola\",\n    \"VI_GMT-4\" : \"America/St_Thomas\",\n    \"VN_GMT+7\" : \"Asia/Ho_Chi_Minh\",\n    \"VU_GMT+11\" : \"Pacific/Efate\",\n    \"WF_GMT+12\" : \"Pacific/Wallis\",\n    \"WS_GMT+13\" : \"Pacific/Apia\",\n    \"YE_GMT+3\" : \"Asia/Aden\",\n    \"YT_GMT+3\" : \"Indian/Mayotte\",\n    \"ZA_GMT+2\" : \"Africa/Johannesburg\",\n    \"ZM_GMT+2\" : \"Africa/Lusaka\",\n    \"ZW_GMT+2\" : \"Africa/Harare\"\n};\n\n/* determines the time zone name for a given country code and GMT offset */\nfunction timezonename(countryCode, gmt) {\n    /* return as default */\n    var timeZone = 'Europe/London';\n    \n    var key = countryCode + '_' + gmt;\n\n    /* override with exact time zone */\n    if (key in codes) {\n        timeZone = codes[key];\n    }\n    \n    return timeZone;\n}\n\nresponse.ldm.header.usertz = timezonename(msg.payload.requestInfo.country,\n                                          msg.payload.requestInfo.timeZone);\n\nreturn response;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 200,
-        "y": 1120,
-        "wires": [
-            [
-                "6a5125cd.573464"
-            ]
-        ]
-    },
-    {
         "id": "c75f8fb.606ccf",
         "type": "comment",
         "z": "3aed4340.8f7d1c",
-        "name": "version 1.3",
-        "info": "version 1.0: initial version\nversion 1.1: added mapping for time zone names, added exception handling\nversion 1.2: bug fix for multiple incoming messages within seconds\n             added control mechanism using a semaphore\nversion 1.3: added logical data model (LDM) to flow, removed control\n             mechanism using a semaphore",
+        "name": "version 1.4",
+        "info": "version 1.0: initial version\nversion 1.1: added mapping for time zone names\n             added exception handling\nversion 1.2: bug fix for multiple incoming messages within seconds\n             added control mechanism using a semaphore\nversion 1.3: added logical data model (LDM) to flow, removed control\n             mechanism using a semaphore\nversion 1.4: added check for appleId and password in 'save input to LDM'",
         "x": 140,
         "y": 60,
         "wires": []
@@ -1379,8 +1136,8 @@
         "z": "3aed4340.8f7d1c",
         "name": "",
         "scope": null,
-        "x": 140,
-        "y": 2060,
+        "x": 120,
+        "y": 1120,
         "wires": [
             [
                 "410eecb9.7de83c"
@@ -1392,13 +1149,56 @@
         "type": "function",
         "z": "3aed4340.8f7d1c",
         "name": "set exception",
-        "func": "node.error(msg.error.source.name);\nnode.error(msg.error.message);",
+        "func": "var response = {};\nresponse.req = null; //???\nresponse.res = null; //???\nresponse.ldm = null; //???\nresponse.payload = {};\nresponse.payload.errors = [];\n\nvar error = {\n    \"status\": 500,\n    \"source\": \"set exception\",\n    \"title\": msg.error.message,\n    \"detail\": msg.error.message\n};\n\nresponse.payload.errors.push(error);\n\nresponse.statusCode = 500;\n\n//node.error(msg.error.source.name);\n//node.error(msg.error.message);\n\nreturn response;",
         "outputs": 1,
         "noerr": 0,
-        "x": 500,
-        "y": 2060,
+        "x": 140,
+        "y": 1200,
         "wires": [
-            []
+            [
+                "72b13ce3.a0951c"
+            ]
+        ]
+    },
+    {
+        "id": "40eea578.fc945c",
+        "type": "http request",
+        "z": "3aed4340.8f7d1c",
+        "name": "call session cache",
+        "method": "POST",
+        "ret": "txt",
+        "url": "http://127.0.0.1:1880/icloud/login",
+        "tls": "",
+        "x": 150,
+        "y": 800,
+        "wires": [
+            [
+                "88bf6bf9.b978c"
+            ]
+        ]
+    },
+    {
+        "id": "983a9f26.b1cff",
+        "type": "subflow:747253ec.210a54",
+        "z": "3aed4340.8f7d1c",
+        "x": 480,
+        "y": 720,
+        "wires": [
+            [
+                "40eea578.fc945c"
+            ]
+        ]
+    },
+    {
+        "id": "72b13ce3.a0951c",
+        "type": "subflow:747253ec.210a54",
+        "z": "3aed4340.8f7d1c",
+        "x": 480,
+        "y": 1200,
+        "wires": [
+            [
+                "ba6057af.a3a548"
+            ]
         ]
     }
 ]
