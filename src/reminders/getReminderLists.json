@@ -813,8 +813,8 @@
                 "y": 226,
                 "wires": [
                     {
-                        "id": "595e324b.072574",
-                        "port": 2
+                        "id": "aa380213.dcc9f8",
+                        "port": 0
                     }
                 ]
             }
@@ -825,7 +825,7 @@
         "type": "function",
         "z": "fd4d19b8.ff0d28",
         "name": "check",
-        "func": "/* check HTTP response code */\nif (msg.statusCode === 200) {\n    /* recreate message from input */\n    var responseOk = {};\n    responseOk.req = msg.req;\n    responseOk.res = msg.res;\n    responseOk.headers = msg.headers;\n    responseOk.payload = msg.payload;\n    responseOk.ldm = msg.ldm;\n    \n    /* check whether payload is filled */\n    if (responseOk.payload !== '') {\n        return[responseOk, null, null];\n    } else {\n        /* Since a JSON object cannot be created from\n           an empty string, the message is passed on to\n           terminal two. */\n        responseOk.req = msg.req;\n        responseOk.res = msg.res;\n        responseOk.ldm = msg.ldm;\n        \n        return[null, responseOk, null];\n    }\n} else {\n    /* recreate message from input */\n    var responseError = {}\n    responseError.req = msg.req;\n    responseError.res = msg.res;\n    responseError.ldm = msg.ldm;    \n    responseError.statusCode = msg.statusCode;\n\n    /* in case no HTTP response code is given */    \n    if (isNaN(msg.statusCode)) {\n        responseError.statusCode = 500;\n    }\n    \n    /*responseError.payload = {\n        \"function\" : msg.ldm.process.trace[msg.ldm.process.trace.length - 1].step,\n        \"message\" : msg.payload\n    };*/\n\n    responseError.payload = msg.ldm;\n\n    return[null, null, responseError];\n}",
+        "func": "/* check HTTP response code */\nif (msg.statusCode === 200) {\n    /* recreate message from input */\n    var responseOk = {};\n    responseOk.req = msg.req;\n    responseOk.res = msg.res;\n    responseOk.headers = msg.headers;\n    responseOk.payload = msg.payload;\n    responseOk.ldm = msg.ldm;\n    \n    /* check whether payload is filled */\n    if (responseOk.payload !== '') {\n        return[responseOk, null, null];\n    } else {\n        /* Since a JSON object cannot be created from\n           an empty string, the message is passed on to\n           terminal two. */\n        responseOk.req = msg.req;\n        responseOk.res = msg.res;\n        responseOk.ldm = msg.ldm;\n        \n        return[null, responseOk, null];\n    }\n} else {\n    /* recreate message from input */\n    var responseError = {}\n    responseError.req = msg.req;\n    responseError.res = msg.res;\n    responseError.ldm = msg.ldm;    \n    responseError.statusCode = msg.statusCode;\n\n    /* in case no HTTP response code is given */    \n    if (isNaN(msg.statusCode)) {\n        responseError.statusCode = 500;\n    }\n    \n    responseError.payload = msg.payload;\n\n    return[null, null, responseError];\n}",
         "outputs": "3",
         "noerr": 0,
         "x": 171,
@@ -837,7 +837,9 @@
             [
                 "3b615dca.4c3432"
             ],
-            []
+            [
+                "aa380213.dcc9f8"
+            ]
         ]
     },
     {
@@ -856,12 +858,23 @@
         "type": "json",
         "z": "fd4d19b8.ff0d28",
         "name": "",
-        "x": 340,
-        "y": 66,
+        "x": 330,
+        "y": 60,
         "wires": [
             [
                 "3b615dca.4c3432"
             ]
+        ]
+    },
+    {
+        "id": "aa380213.dcc9f8",
+        "type": "json",
+        "z": "fd4d19b8.ff0d28",
+        "name": "",
+        "x": 330,
+        "y": 220,
+        "wires": [
+            []
         ]
     },
     {
@@ -890,7 +903,7 @@
         "type": "function",
         "z": "15674b79.b9ce45",
         "name": "save input to LDM",
-        "func": "var output = {};\noutput.req = msg.req;\noutput.res = msg.res;\noutput.payload = msg.payload;\n\n/* function to create error messages */\nfunction createErrorMessage(message) {\n    var error = {};\n    error.req = msg.req;\n    error.res = msg.res;\n    error.ldm = msg.ldm;\n    error.statusCode = 400;\n    error.payload = message;\n\n    return error;\n}\n\n/* check input */\nif ((undefined === msg.payload.appleId || msg.payload.appleId.length === 0) ||\n    (undefined === msg.payload.password || msg.payload.password.length === 0)) {\n    /* appleId or password undefined or empty */\n    return [null, createErrorMessage('One or more elements are missing ' + \n                        '(appleId, password).')];\n}\n\n/* save input to LDM */\noutput.ldm = {\n    \"process\": {\n        \"trace\": [{\n            \"step\": \"save input to LDM\",\n            \"timestamp\": new Date().getTime()\n        }],\n        \"durationInMs\": null\n    },\n    \"header\" : {\n        \"origin\": \"https://www.icloud.com\",\n        \"userAgent\": \"node-red-icloud/1.2.0 (Node-RED)\",\n        \"appleId\": msg.req.query.appleId,\n        \"password\": msg.req.query.password,\n        \"list\": null,\n        \"sessionCookie\": null,\n        \"remindersurl\": null,\n        \"languageCode\": null,\n        \"dsid\": null,\n    \t\"usertz\": null\n    },\n    \"tasklist\": []\n};\n\nreturn [output, null];",
+        "func": "var output = {};\noutput.req = msg.req;\noutput.res = msg.res;\noutput.payload = msg.payload;\n\n/* function to create error messages */\nfunction createErrorMessage(message) {\n    var errors = [];\n    var response = {};\n    response.req = msg.req;\n    response.res = msg.res;\n    response.statusCode = 400;\n    \n    var error = {\n        \"status\": 400,\n        \"source\": { \"pointer\": \"/reminderlists\" },\n        \"title\": 'Error while saving input to LDM',\n        \"detail\": message\n    };\n\n    errors.push(error);\n    \n    response.payload = {\n        \"errors\": errors\n    };\n\n    return response;\n}\n\n/* check input */\nif ((undefined === msg.payload.appleId || msg.payload.appleId.length === 0) ||\n    (undefined === msg.payload.password || msg.payload.password.length === 0)) {\n    /* appleId or password undefined or empty */\n    return [null, createErrorMessage('One or more elements are missing ' + \n                        '(appleId, password).')];\n}\n\n/* save input to LDM */\noutput.ldm = {\n    \"process\": {\n        \"trace\": [{\n            \"step\": \"save input to LDM\",\n            \"timestamp\": new Date().getTime()\n        }],\n        \"durationInMs\": null\n    },\n    \"header\" : {\n        \"origin\": \"https://www.icloud.com\",\n        \"userAgent\": \"node-red-icloud/1.2.0 (Node-RED)\",\n        \"appleId\": msg.req.query.appleId,\n        \"password\": msg.req.query.password,\n        \"list\": null,\n        \"sessionCookie\": null,\n        \"remindersurl\": null,\n        \"languageCode\": null,\n        \"dsid\": null,\n    \t\"usertz\": null\n    },\n    \"tasklist\": []\n};\n\nreturn [output, null];",
         "outputs": "2",
         "noerr": 0,
         "x": 170,
@@ -900,7 +913,7 @@
                 "1af24e66.984542"
             ],
             [
-                "cb84568f.314338"
+                "bcc50372.53467"
             ]
         ]
     },
@@ -929,19 +942,6 @@
         "x": 140,
         "y": 60,
         "wires": []
-    },
-    {
-        "id": "cb84568f.314338",
-        "type": "subflow:fd4d19b8.ff0d28",
-        "z": "15674b79.b9ce45",
-        "x": 420,
-        "y": 227,
-        "wires": [
-            [],
-            [
-                "603c6bce.f473fc"
-            ]
-        ]
     },
     {
         "id": "603c6bce.f473fc",
@@ -1073,6 +1073,18 @@
         "z": "15674b79.b9ce45",
         "x": 400,
         "y": 700,
+        "wires": [
+            [
+                "603c6bce.f473fc"
+            ]
+        ]
+    },
+    {
+        "id": "bcc50372.53467",
+        "type": "subflow:747253ec.210a54",
+        "z": "15674b79.b9ce45",
+        "x": 400,
+        "y": 227,
         "wires": [
             [
                 "603c6bce.f473fc"
