@@ -33,7 +33,7 @@
         "type": "function",
         "z": "747253ec.210a54",
         "name": "prepare log entry",
-        "func": "/* configure logging */\nvar logging = true;\nvar filename = '/home/hendrik/node-red-icloud';\n/* define properties which values should not be logged as plaintext */\nvar list = ['appleId', 'apple_id', 'password'];\n\nif (!logging) {\n    return;\n}\n\n/* function to replace plaintext\n   The list contains elements which should be replaced. */\nfunction replacePlaintext(payload, list) {\n    var k;\n\n    for (k in list) {\n        if (typeof payload !== 'undefined' && payload !== null) {\n            if(payload.hasOwnProperty(list[k])) {\n                payload[list[k]] = 'xxx';\n            }\n        }\n    }\n\n    /* TODO: insert code to replace property values on levels deeper than 1 */\n    \n    return payload;\n}\n\nvar logEntry = '';\n\nif (undefined !== msg.ldm &&\n    undefined !== msg.ldm.process) {\n    logEntry = new Date().toISOString() +\n                ' ' +\n                JSON.stringify(msg.ldm.process);    \n}\n\n\nvar logMessage = {\n    \"filename\": filename,\n    \"payload\": logEntry\n};\n\nreturn logMessage;",
+        "func": "/* configure logging */\nvar logging = false;\nvar filename = '/home/hendrik/node-red-icloud';\n/* define properties which values should not be logged as plaintext */\nvar list = ['appleId', 'apple_id', 'password'];\n\nif (!logging) {\n    return;\n}\n\n/* function to replace plaintext\n   The list contains elements which should be replaced. */\nfunction replacePlaintext(payload, list) {\n    var k;\n\n    for (k in list) {\n        if (typeof payload !== 'undefined' && payload !== null) {\n            if(payload.hasOwnProperty(list[k])) {\n                payload[list[k]] = 'xxx';\n            }\n        }\n    }\n\n    /* TODO: insert code to replace property values on levels deeper than 1 */\n    \n    return payload;\n}\n\nvar logEntry = '';\n\nif (undefined !== msg.ldm &&\n    undefined !== msg.ldm.process) {\n    logEntry = new Date().toISOString() +\n                ' ' +\n                JSON.stringify(msg.ldm.process);    \n}\n\n\nvar logMessage = {\n    \"filename\": filename,\n    \"payload\": logEntry\n};\n\nreturn logMessage;",
         "outputs": "1",
         "noerr": 0,
         "x": 250,
@@ -55,6 +55,32 @@
         "overwriteFile": "false",
         "x": 500,
         "y": 180,
+        "wires": []
+    },
+    {
+        "id": "4da1c51b.eea26c",
+        "type": "catch",
+        "z": "747253ec.210a54",
+        "name": "",
+        "scope": null,
+        "x": 220,
+        "y": 260,
+        "wires": [
+            [
+                "ba779ebf.906ad"
+            ]
+        ]
+    },
+    {
+        "id": "ba779ebf.906ad",
+        "type": "debug",
+        "z": "747253ec.210a54",
+        "name": "log error",
+        "active": true,
+        "console": "true",
+        "complete": "error",
+        "x": 490,
+        "y": 260,
         "wires": []
     },
     {
@@ -145,6 +171,32 @@
         ]
     },
     {
+        "id": "db7144bf.863398",
+        "type": "catch",
+        "z": "fd4d19b8.ff0d28",
+        "name": "",
+        "scope": null,
+        "x": 180,
+        "y": 260,
+        "wires": [
+            [
+                "deb4b529.f59ba8"
+            ]
+        ]
+    },
+    {
+        "id": "deb4b529.f59ba8",
+        "type": "debug",
+        "z": "fd4d19b8.ff0d28",
+        "name": "log error",
+        "active": true,
+        "console": "true",
+        "complete": "error",
+        "x": 530,
+        "y": 260,
+        "wires": []
+    },
+    {
         "id": "747253ec.210a54",
         "type": "subflow",
         "name": "logging",
@@ -178,7 +230,7 @@
         "type": "function",
         "z": "747253ec.210a54",
         "name": "prepare log entry",
-        "func": "/* configure logging */\nvar logging = true;\nvar filename = '/home/hendrik/node-red-icloud';\n/* define properties which values should not be logged as plaintext */\nvar list = ['appleId', 'apple_id', 'password'];\n\nif (!logging) {\n    return;\n}\n\n/* function to replace plaintext\n   The list contains elements which should be replaced. */\nfunction replacePlaintext(payload, list) {\n    var k;\n\n    for (k in list) {\n        if (typeof payload !== 'undefined' && payload !== null) {\n            if(payload.hasOwnProperty(list[k])) {\n                payload[list[k]] = 'xxx';\n            }\n        }\n    }\n\n    /* TODO: insert code to replace property values on levels deeper than 1 */\n    \n    return payload;\n}\n\nvar logEntry = '';\n\nif (undefined !== msg.ldm &&\n    undefined !== msg.ldm.process) {\n    logEntry = new Date().toISOString() +\n                ' ' +\n                JSON.stringify(msg.ldm.process);    \n}\n\n\nvar logMessage = {\n    \"filename\": filename,\n    \"payload\": logEntry\n};\n\nreturn logMessage;",
+        "func": "/* configure logging */\nvar logging = false;\nvar filename = '/home/hendrik/node-red-icloud';\n/* define properties which values should not be logged as plaintext */\nvar list = ['appleId', 'apple_id', 'password'];\n\nif (!logging) {\n    return;\n}\n\n/* function to replace plaintext\n   The list contains elements which should be replaced. */\nfunction replacePlaintext(payload, list) {\n    var k;\n\n    for (k in list) {\n        if (typeof payload !== 'undefined' && payload !== null) {\n            if(payload.hasOwnProperty(list[k])) {\n                payload[list[k]] = 'xxx';\n            }\n        }\n    }\n\n    /* TODO: insert code to replace property values on levels deeper than 1 */\n    \n    return payload;\n}\n\nvar logEntry = '';\n\nif (undefined !== msg.ldm &&\n    undefined !== msg.ldm.process) {\n    logEntry = new Date().toISOString() +\n                ' ' +\n                JSON.stringify(msg.ldm.process);    \n}\n\n\nvar logMessage = {\n    \"filename\": filename,\n    \"payload\": logEntry\n};\n\nreturn logMessage;",
         "outputs": "1",
         "noerr": 0,
         "x": 250,
@@ -200,6 +252,32 @@
         "overwriteFile": "false",
         "x": 500,
         "y": 180,
+        "wires": []
+    },
+    {
+        "id": "4da1c51b.eea26c",
+        "type": "catch",
+        "z": "747253ec.210a54",
+        "name": "",
+        "scope": null,
+        "x": 220,
+        "y": 260,
+        "wires": [
+            [
+                "ba779ebf.906ad"
+            ]
+        ]
+    },
+    {
+        "id": "ba779ebf.906ad",
+        "type": "debug",
+        "z": "747253ec.210a54",
+        "name": "log error",
+        "active": true,
+        "console": "true",
+        "complete": "error",
+        "x": 490,
+        "y": 260,
         "wires": []
     },
     {
