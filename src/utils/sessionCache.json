@@ -424,8 +424,8 @@
                 "y": 226,
                 "wires": [
                     {
-                        "id": "aa380213.dcc9f8",
-                        "port": 0
+                        "id": "595e324b.072574",
+                        "port": 2
                     }
                 ]
             }
@@ -436,7 +436,7 @@
         "type": "function",
         "z": "fd4d19b8.ff0d28",
         "name": "check",
-        "func": "/* check HTTP response code */\nif (msg.statusCode === 200) {\n    /* recreate message from input */\n    var responseOk = {};\n    responseOk.req = msg.req;\n    responseOk.res = msg.res;\n    responseOk.headers = msg.headers;\n    responseOk.payload = msg.payload;\n    responseOk.ldm = msg.ldm;\n    \n    /* check whether payload is filled */\n    if (responseOk.payload !== '') {\n        return[responseOk, null, null];\n    } else {\n        /* Since a JSON object cannot be created from\n           an empty string, the message is passed on to\n           terminal two. */\n        responseOk.req = msg.req;\n        responseOk.res = msg.res;\n        responseOk.ldm = msg.ldm;\n        \n        return[null, responseOk, null];\n    }\n} else {\n    /* recreate message from input */\n    var responseError = {}\n    responseError.req = msg.req;\n    responseError.res = msg.res;\n    responseError.ldm = msg.ldm;    \n    responseError.statusCode = msg.statusCode;\n\n    /* in case no HTTP response code is given */    \n    if (isNaN(msg.statusCode)) {\n        responseError.statusCode = 500;\n    }\n    \n    responseError.payload = msg.payload;\n\n    return[null, null, responseError];\n}",
+        "func": "/* error codes */\nvar errorCodes = {\n    '{\"error\":7}' : {'title': 'Invalid credentials', 'detail': 'Invalid Apple ID'},\n    '{\"error\":1}' : {'title': 'Invalid credentials',  'detail': 'Invalid password'},\n    'Error: getaddrinfo EAI_AGAIN setup.icloud.com:443 : https://setup.icloud.com/setup/ws/1/login': \n        {'title': 'Connection error',  'detail': 'Unable to connect to iCloud'}\n};\n\n/* function to create error messages */\nfunction createErrorMessage(status, source, detail) {\n    var errors = [];\n    var response = {};\n    response.req = msg.req;\n    response.res = msg.res;\n    response.statusCode = status;\n    \n    var error = {\n        \"status\": status,\n        \"source\": { \"pointer\": source },\n        \"title\": errorCodes[detail] ? errorCodes[detail].title : '',\n        \"detail\": errorCodes[detail] ? errorCodes[detail].detail : detail\n    };\n\n    errors.push(error);\n    \n    response.payload = {\n        \"errors\": errors\n    };\n\n    return response;\n}\n\n/* check HTTP response code */\nif (msg.statusCode === 200) {\n    /* recreate message from input */\n    var responseOk = {};\n    responseOk.req = msg.req;\n    responseOk.res = msg.res;\n    responseOk.headers = msg.headers;\n    responseOk.payload = msg.payload;\n    responseOk.ldm = msg.ldm;\n    \n    /* check whether payload is filled */\n    if (responseOk.payload !== '') {\n        return[responseOk, null, null];\n    } else {\n        /* Since a JSON object cannot be created from\n           an empty string, the message is passed on to\n           terminal two. */\n        responseOk.req = msg.req;\n        responseOk.res = msg.res;\n        responseOk.ldm = msg.ldm;\n        \n        return[null, responseOk, null];\n    }\n} else {\n    /* recreate message from input */\n    var errorResponse = {};\n    var statusCode = msg.statusCode;\n    var payload = JSON.parse(msg.payload);\n\n    /* in case no HTTP response code is given */    \n    if (isNaN(statusCode)) {\n        statusCode = 500;\n    }\n\n    /* check whether there is an error object */\n    if(undefined !== payload.errors) {\n        /* \n         * In case there is an error already, use this error object\n         * to return the root cause of the problem.\n         */\n        errorResponse.req = msg.req;\n        errorResponse.res = msg.res;\n        errorResponse.payload = payload;\n        errorResponse.statusCode = statusCode;\n    } else {\n        errorResponse = createErrorMessage(statusCode, msg.responseUrl, msg.payload)\n    }\n\n    return[null, null, errorResponse];\n}",
         "outputs": "3",
         "noerr": 0,
         "x": 171,
@@ -448,9 +448,7 @@
             [
                 "3b615dca.4c3432"
             ],
-            [
-                "aa380213.dcc9f8"
-            ]
+            []
         ]
     },
     {
@@ -475,17 +473,6 @@
             [
                 "3b615dca.4c3432"
             ]
-        ]
-    },
-    {
-        "id": "aa380213.dcc9f8",
-        "type": "json",
-        "z": "fd4d19b8.ff0d28",
-        "name": "",
-        "x": 330,
-        "y": 220,
-        "wires": [
-            []
         ]
     },
     {
@@ -1037,6 +1024,7 @@
         "id": "7f0b8674.72a288",
         "type": "subflow:fd4d19b8.ff0d28",
         "z": "d685ffcb.a30c08",
+        "name": "",
         "x": 420,
         "y": 540,
         "wires": [
