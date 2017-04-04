@@ -7,7 +7,7 @@
         "in": [
             {
                 "x": 60,
-                "y": 100,
+                "y": 60,
                 "wires": [
                     {
                         "id": "f2abfe1d.5032a"
@@ -15,29 +15,18 @@
                 ]
             }
         ],
-        "out": [
-            {
-                "x": 608,
-                "y": 102,
-                "wires": [
-                    {
-                        "id": "747253ec.210a54",
-                        "port": 0
-                    }
-                ]
-            }
-        ]
+        "out": []
     },
     {
         "id": "f2abfe1d.5032a",
         "type": "function",
         "z": "747253ec.210a54",
         "name": "prepare log entry",
-        "func": "/* configure logging */\nvar logging = false;\nvar filename = '/home/hendrik/node-red-icloud';\n/* define properties which values should not be logged as plaintext */\nvar list = ['appleId', 'apple_id', 'password'];\n\nif (!logging) {\n    return;\n}\n\n/* function to replace plaintext\n   The list contains elements which should be replaced. */\nfunction replacePlaintext(payload, list) {\n    var k;\n\n    for (k in list) {\n        if (typeof payload !== 'undefined' && payload !== null) {\n            if(payload.hasOwnProperty(list[k])) {\n                payload[list[k]] = 'xxx';\n            }\n        }\n    }\n\n    /* TODO: insert code to replace property values on levels deeper than 1 */\n    \n    return payload;\n}\n\nvar logEntry = '';\n\nif (undefined !== msg.ldm &&\n    undefined !== msg.ldm.process) {\n    logEntry = new Date().toISOString() +\n                ' ' +\n                JSON.stringify(msg.ldm.process);    \n}\n\n\nvar logMessage = {\n    \"filename\": filename,\n    \"payload\": logEntry\n};\n\nreturn logMessage;",
+        "func": "/* configure logging */\nvar logging = false;\nvar filename = '/home/hendrik/node-red-icloud';\n/* define properties which values should not be logged as plaintext */\nvar list = ['appleId', 'apple_id', 'password'];\n\nif (!logging) {\n    return;\n}\n\n/* function to replace plaintext\n   The list contains elements which should be replaced. */\nfunction replacePlaintext(payload, list) {\n    var k;\n\n    for (k in list) {\n        if (typeof payload !== 'undefined' && payload !== null) {\n            if(payload.hasOwnProperty(list[k])) {\n                payload[list[k]] = 'xxx';\n            }\n        }\n    }\n\n    /* TODO: insert code to replace property values on levels deeper than 1 */\n    \n    return payload;\n}\n\nvar logEntry = '';\n\nif (!msg.ldm &&\n    !msg.ldm.process) {\n    logEntry = new Date().toISOString() +\n                ' ' +\n                JSON.stringify(msg.ldm.process);    \n}\n\n\nvar logMessage = {\n    \"filename\": filename,\n    \"payload\": logEntry\n};\n\nreturn logMessage;",
         "outputs": "1",
         "noerr": 0,
         "x": 250,
-        "y": 180,
+        "y": 60,
         "wires": [
             [
                 "22800233.236c8e"
@@ -54,7 +43,7 @@
         "createDir": false,
         "overwriteFile": "false",
         "x": 500,
-        "y": 180,
+        "y": 60,
         "wires": []
     },
     {
@@ -63,8 +52,8 @@
         "z": "747253ec.210a54",
         "name": "",
         "scope": null,
-        "x": 220,
-        "y": 260,
+        "x": 100,
+        "y": 140,
         "wires": [
             [
                 "ba779ebf.906ad"
@@ -79,8 +68,81 @@
         "active": true,
         "console": "true",
         "complete": "error",
-        "x": 490,
-        "y": 260,
+        "x": 310,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "747253ec.210a54",
+        "type": "subflow",
+        "name": "logging",
+        "info": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 60,
+                "wires": [
+                    {
+                        "id": "f2abfe1d.5032a"
+                    }
+                ]
+            }
+        ],
+        "out": []
+    },
+    {
+        "id": "f2abfe1d.5032a",
+        "type": "function",
+        "z": "747253ec.210a54",
+        "name": "prepare log entry",
+        "func": "/* configure logging */\nvar logging = false;\nvar filename = '/home/hendrik/node-red-icloud';\n/* define properties which values should not be logged as plaintext */\nvar list = ['appleId', 'apple_id', 'password'];\n\nif (!logging) {\n    return;\n}\n\n/* function to replace plaintext\n   The list contains elements which should be replaced. */\nfunction replacePlaintext(payload, list) {\n    var k;\n\n    for (k in list) {\n        if (typeof payload !== 'undefined' && payload !== null) {\n            if(payload.hasOwnProperty(list[k])) {\n                payload[list[k]] = 'xxx';\n            }\n        }\n    }\n\n    /* TODO: insert code to replace property values on levels deeper than 1 */\n    \n    return payload;\n}\n\nvar logEntry = '';\n\nif (!msg.ldm &&\n    !msg.ldm.process) {\n    logEntry = new Date().toISOString() +\n                ' ' +\n                JSON.stringify(msg.ldm.process);    \n}\n\n\nvar logMessage = {\n    \"filename\": filename,\n    \"payload\": logEntry\n};\n\nreturn logMessage;",
+        "outputs": "1",
+        "noerr": 0,
+        "x": 250,
+        "y": 60,
+        "wires": [
+            [
+                "22800233.236c8e"
+            ]
+        ]
+    },
+    {
+        "id": "22800233.236c8e",
+        "type": "file",
+        "z": "747253ec.210a54",
+        "name": "write log entry",
+        "filename": "",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "x": 500,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "4da1c51b.eea26c",
+        "type": "catch",
+        "z": "747253ec.210a54",
+        "name": "",
+        "scope": null,
+        "x": 100,
+        "y": 140,
+        "wires": [
+            [
+                "ba779ebf.906ad"
+            ]
+        ]
+    },
+    {
+        "id": "ba779ebf.906ad",
+        "type": "debug",
+        "z": "747253ec.210a54",
+        "name": "log error",
+        "active": true,
+        "console": "true",
+        "complete": "error",
+        "x": 310,
+        "y": 140,
         "wires": []
     },
     {
@@ -90,37 +152,26 @@
         "info": "",
         "in": [
             {
-                "x": 45,
-                "y": 169,
+                "x": 64,
+                "y": 61,
                 "wires": [
                     {
                         "id": "595e324b.072574"
+                    },
+                    {
+                        "id": "9bacadc0.9de588"
                     }
                 ]
             }
         ],
         "out": [
             {
-                "x": 723,
-                "y": 169,
+                "x": 380,
+                "y": 60,
                 "wires": [
                     {
-                        "id": "28ac27ed.ecfe18",
+                        "id": "595e324b.072574",
                         "port": 0
-                    },
-                    {
-                        "id": "595e324b.072574",
-                        "port": 1
-                    }
-                ]
-            },
-            {
-                "x": 723,
-                "y": 226,
-                "wires": [
-                    {
-                        "id": "595e324b.072574",
-                        "port": 2
                     }
                 ]
             }
@@ -131,19 +182,19 @@
         "type": "function",
         "z": "fd4d19b8.ff0d28",
         "name": "check",
-        "func": "/* error codes */\nvar errorCodes = {\n    '{\"error\":7}' : {'title': 'Invalid credentials', 'detail': 'Invalid Apple ID'},\n    '{\"error\":1}' : {'title': 'Invalid credentials',  'detail': 'Invalid password'},\n    'Error: getaddrinfo EAI_AGAIN setup.icloud.com:443 : https://setup.icloud.com/setup/ws/1/login': \n        {'title': 'Connection error',  'detail': 'Unable to connect to iCloud'}\n};\n\nfunction isJSON(jsonString) {\n    try {\n        JSON.parse(jsonString);\n    } catch(e) {\n        return false;\n    }\n    \n    return true;\n}\n\n/* function to create error messages */\nfunction createErrorMessage(status, source, detail) {\n    var errors = [];\n    var response = {};\n    response.req = msg.req;\n    response.res = msg.res;\n    response.statusCode = status;\n    \n    var error = {\n        \"status\": status,\n        \"source\": { \"pointer\": source },\n        \"title\": errorCodes[detail] ? errorCodes[detail].title : '',\n        \"detail\": errorCodes[detail] ? errorCodes[detail].detail : detail\n    };\n\n    errors.push(error);\n    \n    response.payload = {\n        \"errors\": errors\n    };\n\n    return response;\n}\n\n/* check HTTP response code */\nif (msg.statusCode === 200) {\n    /* recreate message from input */\n    var responseOk = {};\n    responseOk.req = msg.req;\n    responseOk.res = msg.res;\n    responseOk.headers = msg.headers;\n    responseOk.payload = msg.payload;\n    responseOk.ldm = msg.ldm;\n    \n    /* check whether payload is filled */\n    if (responseOk.payload !== '') {\n        return[responseOk, null, null];\n    } else {\n        /* Since a JSON object cannot be created from\n           an empty string, the message is passed on to\n           terminal two. */\n        responseOk.req = msg.req;\n        responseOk.res = msg.res;\n        responseOk.ldm = msg.ldm;\n        \n        return[null, responseOk, null];\n    }\n} else {\n    var errorResponse = {};\n    var statusCode = msg.statusCode;\n    var payload = isJSON(msg.payload) ? JSON.parse(msg.payload) : '';\n\n    /* in case no HTTP response code is given */    \n    if (isNaN(statusCode)) {\n        statusCode = 500;\n    }\n\n    /* check whether there is an error object */\n    if(undefined !== payload.errors) {\n        /* \n         * In case there is an error already, use this error object\n         * to return the root cause of the problem.\n         */\n        errorResponse.req = msg.req;\n        errorResponse.res = msg.res;\n        errorResponse.payload = payload;\n        errorResponse.statusCode = statusCode;\n    } else {\n        errorResponse = createErrorMessage(statusCode, msg.responseUrl, msg.payload);\n    }\n\n    return[null, null, errorResponse];\n}",
-        "outputs": "3",
+        "func": "/* error codes */\nvar errorCodes = {\n    '7' : {'title': 'Invalid credentials', 'detail': 'Invalid Apple ID'},\n    '1' : {'title': 'Invalid credentials',  'detail': 'Invalid password'},\n    'Error: getaddrinfo EAI_AGAIN p42-remindersws.icloud.com:443': \n        {'title': 'Connection error',  'detail': 'Unable to connect to iCloud'},\n    'Error: getaddrinfo EAI_AGAIN setup.icloud.com:443': \n        {'title': 'Connection error',  'detail': 'Unable to connect to iCloud'}\n};\n\n/* function to create error messages */\nfunction createErrorMessage(status, source, title, detail) {\n    var response = {};\n    response.statusCode = status;\n    response.req = msg.req;\n    response.res = msg.res;\n    response.ldm = msg.ldm;\n\n    response.ldm.process.finished = true;\n\n    var error = {\n        \"status\": status,\n        \"source\": { \"pointer\": source },\n        \"title\": errorCodes[detail] ? errorCodes[detail].title : title,\n        \"detail\": errorCodes[detail] ? errorCodes[detail].detail : detail\n    };\n\n    var errors = [];\n    errors.push(error);\n    \n    response.payload = {\n        \"errors\": errors\n    };\n\n    return response;\n}\n\nif (msg.statusCode === 200) {\n    /* HTTP status code 200 OK */\n    \n    /* recreate message from input */\n    var responseOk = {};\n    responseOk.req = msg.req;\n    responseOk.res = msg.res;\n    responseOk.headers = msg.headers;\n    responseOk.payload = msg.payload;\n    responseOk.ldm = msg.ldm;\n    \n    /* check whether payload is filled */\n    if (responseOk.payload !== '') {\n        return[responseOk, null];\n    } else {\n        /* Since a JSON object cannot be created from\n           an empty string, the message is passed on to\n           terminal two. */\n        responseOk.req = msg.req;\n        responseOk.res = msg.res;\n        responseOk.ldm = msg.ldm;\n        \n        return[responseOk, null];\n    }\n} else if(!msg.statusCode &&\n          Number.isInteger(msg.statusCode) &&\n          msg.statusCode !== 200) {\n    /* HTTP status codes */\n       \n    /* \n     * elements:\n     *\n     * msg.payload, e.g. \"{\"error\":7}\"\n     * msg.statusCode, e.g. 403\n     * msg.responseUrl, e.g. \"https://setup.icloud.com/setup/ws/1/login\"\n     */\n     if(msg.payload.errors) {\n        /* in case an errors object exists ... */ \n        return[null, msg];\n     } else {\n         var errorResponse = createErrorMessage(\n                                msg.statusCode,\n                                msg.responseUrl,\n                                msg.payload,\n                                msg.payload.error);\n\n         return[null, errorResponse];\n     }\n} else if(!msg.error) {\n    /* error object - mostly from catch node */\n\n    /* \n     * elements:\n     *\n     * msg.error.message, e.g. \"ReferenceError: a is not defined (line 4, col 4)\"\n     * msg.error.source.id, e.g. \"60c342f9.7acd6c\"\n     * msg.error.source.type, e.g. \"function\"\n     * msg.error.source.name, e.g. \"set message\"\n     * msg.error.source.count, e.g. 1\n     */\n    var errorResponse = createErrorMessage(\n                            500,\n                            msg.error.source.type + ' ' + msg.error.source.name,\n                            'Error in ' + msg.error.source.type + ' ' + msg.error.source.name,\n                            msg.error.message);\n\n    return[null, errorResponse];\n} else if (!msg.statusCode &&\n           isNaN(msg.statusCode)) {\n    /* do nothing */\n} else {\n    /* something unexpected happened */\n    var errorResponse = createErrorMessage(\n                            500,\n                            'Error handling',\n                            'Unexpected',\n                            'An error that has not been handled properly has occurred. ' +\n                            'Analyse the error and provide a proper error handling for this case.');\n\n    return[null, errorResponse];\n}",
+        "outputs": "2",
         "noerr": 0,
-        "x": 171,
-        "y": 168,
+        "x": 210,
+        "y": 60,
         "wires": [
-            [
-                "28ac27ed.ecfe18"
-            ],
             [
                 "3b615dca.4c3432"
             ],
-            []
+            [
+                "3b615dca.4c3432",
+                "2c260c2.371a874"
+            ]
         ]
     },
     {
@@ -151,24 +202,9 @@
         "type": "subflow:747253ec.210a54",
         "z": "fd4d19b8.ff0d28",
         "name": "logging",
-        "x": 516,
-        "y": 141.5,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "28ac27ed.ecfe18",
-        "type": "json",
-        "z": "fd4d19b8.ff0d28",
-        "name": "",
-        "x": 330,
-        "y": 60,
-        "wires": [
-            [
-                "3b615dca.4c3432"
-            ]
-        ]
+        "x": 420,
+        "y": 140,
+        "wires": []
     },
     {
         "id": "db7144bf.863398",
@@ -176,8 +212,8 @@
         "z": "fd4d19b8.ff0d28",
         "name": "",
         "scope": null,
-        "x": 180,
-        "y": 260,
+        "x": 100,
+        "y": 300,
         "wires": [
             [
                 "deb4b529.f59ba8"
@@ -192,92 +228,25 @@
         "active": true,
         "console": "true",
         "complete": "error",
-        "x": 530,
-        "y": 260,
+        "x": 310,
+        "y": 300,
         "wires": []
     },
     {
-        "id": "747253ec.210a54",
-        "type": "subflow",
-        "name": "logging",
-        "info": "",
-        "in": [
-            {
-                "x": 60,
-                "y": 100,
-                "wires": [
-                    {
-                        "id": "f2abfe1d.5032a"
-                    }
-                ]
-            }
-        ],
-        "out": [
-            {
-                "x": 608,
-                "y": 102,
-                "wires": [
-                    {
-                        "id": "747253ec.210a54",
-                        "port": 0
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "id": "f2abfe1d.5032a",
-        "type": "function",
-        "z": "747253ec.210a54",
-        "name": "prepare log entry",
-        "func": "/* configure logging */\nvar logging = false;\nvar filename = '/home/hendrik/node-red-icloud';\n/* define properties which values should not be logged as plaintext */\nvar list = ['appleId', 'apple_id', 'password'];\n\nif (!logging) {\n    return;\n}\n\n/* function to replace plaintext\n   The list contains elements which should be replaced. */\nfunction replacePlaintext(payload, list) {\n    var k;\n\n    for (k in list) {\n        if (typeof payload !== 'undefined' && payload !== null) {\n            if(payload.hasOwnProperty(list[k])) {\n                payload[list[k]] = 'xxx';\n            }\n        }\n    }\n\n    /* TODO: insert code to replace property values on levels deeper than 1 */\n    \n    return payload;\n}\n\nvar logEntry = '';\n\nif (undefined !== msg.ldm &&\n    undefined !== msg.ldm.process) {\n    logEntry = new Date().toISOString() +\n                ' ' +\n                JSON.stringify(msg.ldm.process);    \n}\n\n\nvar logMessage = {\n    \"filename\": filename,\n    \"payload\": logEntry\n};\n\nreturn logMessage;",
-        "outputs": "1",
-        "noerr": 0,
-        "x": 250,
-        "y": 180,
-        "wires": [
-            [
-                "22800233.236c8e"
-            ]
-        ]
-    },
-    {
-        "id": "22800233.236c8e",
-        "type": "file",
-        "z": "747253ec.210a54",
-        "name": "write log entry",
-        "filename": "",
-        "appendNewline": true,
-        "createDir": false,
-        "overwriteFile": "false",
-        "x": 500,
-        "y": 180,
-        "wires": []
-    },
-    {
-        "id": "4da1c51b.eea26c",
-        "type": "catch",
-        "z": "747253ec.210a54",
+        "id": "2c260c2.371a874",
+        "type": "http response",
+        "z": "fd4d19b8.ff0d28",
         "name": "",
-        "scope": null,
-        "x": 220,
-        "y": 260,
-        "wires": [
-            [
-                "ba779ebf.906ad"
-            ]
-        ]
+        "x": 410,
+        "y": 220,
+        "wires": []
     },
     {
-        "id": "ba779ebf.906ad",
-        "type": "debug",
-        "z": "747253ec.210a54",
-        "name": "log error",
-        "active": true,
-        "console": "true",
-        "complete": "error",
-        "x": 490,
-        "y": 260,
+        "id": "9bacadc0.9de588",
+        "type": "subflow:747253ec.210a54",
+        "z": "fd4d19b8.ff0d28",
+        "x": 220,
+        "y": 140,
         "wires": []
     },
     {
@@ -293,7 +262,7 @@
         "url": "/reminder/:list",
         "method": "get",
         "swaggerDoc": "",
-        "x": 170,
+        "x": 130,
         "y": 140,
         "wires": [
             [
@@ -306,17 +275,18 @@
         "type": "function",
         "z": "e00b4175.b968",
         "name": "save input to LDM",
-        "func": "var output = {};\noutput.req = msg.req;\noutput.res = msg.res;\noutput.payload = msg.payload;\n\n/* function to create error messages */\nfunction createErrorMessage(message) {\n    var errors = [];\n    var response = {};\n    response.req = msg.req;\n    response.res = msg.res;\n    response.statusCode = 400;\n    \n    var error = {\n        \"status\": 400,\n        \"source\": { \"pointer\": \"/reminder/:list\" },\n        \"title\": 'Error while saving input to LDM',\n        \"detail\": message\n    };\n\n    errors.push(error);\n    \n    response.payload = {\n        \"errors\": errors\n    };\n\n    return response;\n}\n\n/* check input */\nif ((undefined === msg.payload.appleId || msg.payload.appleId.length === 0) ||\n    (undefined === msg.payload.password || msg.payload.password.length === 0)) {\n    /* appleId or password undefined or not empty */\n    return [null, createErrorMessage('One or more elements are missing ' + \n                        '(appleId, password).')];\n}\n\n/* save input to LDM */\noutput.ldm = {\n    \"process\": {\n        \"trace\": [{\n            \"step\": \"save input to LDM\",\n            \"timestamp\": new Date().getTime()\n        }],\n        \"durationInMs\": null\n    },\n    \"header\": {\n        \"origin\": \"https://www.icloud.com\",\n        \"userAgent\": \"node-red-icloud/1.2.0 (Node-RED)\",\n        \"appleId\": msg.req.query.appleId,\n        \"password\": msg.req.query.password,\n        \"list\": msg.req.params.list ? msg.req.params.list : null,\n        \"sessionCookie\": null,\n        \"remindersurl\": null,\n        \"languageCode\": null,\n        \"dsid\": null,\n    \t\"usertz\": null\n    },\n    \"tasklist\": [{\n        \"guid\": null,\n        \"title\": msg.req.params.list,\n        \"color\": null,\n        \"tasks\": []\n    }]\n};\n\nreturn [output, null];",
+        "func": "var output = {};\noutput.req = msg.req;\noutput.res = msg.res;\noutput.payload = msg.payload;\n\n/* function to create error messages */\nfunction createErrorMessage(message) {\n    var errors = [];\n    var response = {};\n    response.req = msg.req;\n    response.res = msg.res;\n    response.statusCode = 400;\n    \n    var error = {\n        \"status\": 400,\n        \"source\": { \"pointer\": \"/reminder/:list\" },\n        \"title\": 'Error while saving input to LDM',\n        \"detail\": message\n    };\n\n    errors.push(error);\n    \n    response.payload = {\n        \"errors\": errors\n    };\n\n    return response;\n}\n\n/* check input */\nif ((!msg.payload.appleId || msg.payload.appleId.length === 0) ||\n    (!msg.payload.password || msg.payload.password.length === 0)) {\n    /* appleId or password undefined or not empty */\n    return [null, createErrorMessage('One or more elements are missing ' + \n                        '(appleId, password).')];\n}\n\n/* save input to LDM */\noutput.ldm = {\n    \"process\": {\n        \"trace\": [{\n            \"flow\": \"get items on reminder list\",\n            \"step\": \"save input to LDM\",\n            \"timestamp\": new Date().getTime()\n        }],\n        \"durationInMs\": null\n    },\n    \"header\": {\n        \"origin\": \"https://www.icloud.com\",\n        \"userAgent\": \"node-red-icloud/1.2.0 (Node-RED)\",\n        \"appleId\": msg.req.query.appleId,\n        \"password\": msg.req.query.password,\n        \"list\": msg.req.params.list ? msg.req.params.list : null,\n        \"sessionCookie\": null,\n        \"remindersurl\": null,\n        \"languageCode\": null,\n        \"dsid\": null,\n    \t\"usertz\": null\n    },\n    \"tasklist\": [{\n        \"guid\": null,\n        \"title\": msg.req.params.list,\n        \"color\": null,\n        \"tasks\": []\n    }]\n};\n\nreturn [output, null];",
         "outputs": "2",
         "noerr": 0,
-        "x": 170,
-        "y": 220,
+        "x": 390,
+        "y": 140,
         "wires": [
             [
-                "3d7f76f4.8a729a"
+                "506f28e6.8f6f1",
+                "53b561af.ce0c48"
             ],
             [
-                "fddbda2d.9a7978"
+                "5772a902.77a3f8"
             ]
         ]
     },
@@ -325,17 +295,18 @@
         "type": "function",
         "z": "e00b4175.b968",
         "name": "prepare get items",
-        "func": "/* recreate message from input */\nvar listRequest = {};\nlistRequest.req = msg.req;\nlistRequest.res = msg.res;\nlistRequest.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"step\": \"save response to LDM\",\n    \"timestamp\": new Date().getTime()\n};\nlistRequest.ldm.process.trace.push(trace);\n\n/* function to create error messages */\nfunction createErrorMessage(message) {\n    var errors = [];\n    var response = {};\n    response.req = msg.req;\n    response.res = msg.res;\n    response.statusCode = 400;\n    \n    var error = {\n        \"status\": 400,\n        \"source\": { \"pointer\": \"/reminder/:list\" },\n        \"title\": 'Error while preparing \"get items\" request',\n        \"detail\": message\n    };\n\n    errors.push(error);\n    \n    response.payload = {\n        \"errors\": errors\n    };\n\n    return response;\n}\n\nvar guid;\n\nfor(var k in msg.ldm.tasklist) {\n    var tasklist = msg.ldm.tasklist[k];\n\n    if(tasklist.title === msg.ldm.header.list) {\n        guid = tasklist.guid;\n    }\n}\n\nif(undefined !== guid) {\n    /* create URL */\n    var url = listRequest.ldm.header.remindersurl +\n            \"/rd/reminders/\" +\n            guid +\n            \"?\" +\n            'usertz=' + msg.ldm.header.usertz +\n            '&lang=' + msg.ldm.header.languageCode +\n            '&dsid=' + msg.ldm.header.dsid;\n    \n    /* set URL */\n    listRequest.url = url;\n    \n    /* HTTP header */\n    listRequest.headers = {\n        \"origin\": \"https://www.icloud.com\",\n        \"cookie\": listRequest.ldm.header.sessionCookie\n    };\n    \n    return [listRequest, null];\n} else {\n    /* list not found */\n    return [null, createErrorMessage('The list ' + msg.ldm.header.list + ' does not exist.')];\n}",
+        "func": "/* recreate message from input */\nvar listRequest = {};\nlistRequest.req = msg.req;\nlistRequest.res = msg.res;\nlistRequest.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"flow\": \"get items on reminder list\",\n    \"step\": \"prepare get items\",\n    \"timestamp\": new Date().getTime()\n};\nlistRequest.ldm.process.trace.push(trace);\n\n/* function to create error messages */\nfunction createErrorMessage(message) {\n    var errors = [];\n    var response = {};\n    response.req = msg.req;\n    response.res = msg.res;\n    response.statusCode = 400;\n    \n    var error = {\n        \"status\": 400,\n        \"source\": { \"pointer\": \"/reminder/:list\" },\n        \"title\": 'Error while preparing \"get items\" request',\n        \"detail\": message\n    };\n\n    errors.push(error);\n    \n    response.payload = {\n        \"errors\": errors\n    };\n\n    return response;\n}\n\nvar guid;\n\nfor(var k in msg.ldm.tasklist) {\n    var tasklist = msg.ldm.tasklist[k];\n\n    if(tasklist.title === msg.ldm.header.list) {\n        guid = tasklist.guid;\n    }\n}\n\nif(guid) {\n    /* create URL */\n    var url = listRequest.ldm.header.remindersurl +\n            \"/rd/reminders/\" +\n            guid +\n            \"?\" +\n            'usertz=' + msg.ldm.header.usertz +\n            '&lang=' + msg.ldm.header.languageCode +\n            '&dsid=' + msg.ldm.header.dsid;\n    \n    /* set URL */\n    listRequest.url = url;\n    \n    /* HTTP header */\n    listRequest.headers = {\n        \"origin\": \"https://www.icloud.com\",\n        \"cookie\": listRequest.ldm.header.sessionCookie\n    };\n    \n    return [listRequest, null];\n} else {\n    /* list not found */\n    return [null, createErrorMessage('The list ' + msg.ldm.header.list + ' does not exist.')];\n}",
         "outputs": "2",
         "noerr": 0,
-        "x": 170,
-        "y": 540,
+        "x": 1430,
+        "y": 140,
         "wires": [
             [
-                "fb783af4.930e58"
+                "75672673.3298f8",
+                "4179b738.83f948"
             ],
             [
-                "f4e48ca7.91a438"
+                "51061bcf.e69eec"
             ]
         ]
     },
@@ -345,11 +316,11 @@
         "z": "e00b4175.b968",
         "name": "iCloud get reminders",
         "method": "GET",
-        "ret": "txt",
+        "ret": "obj",
         "url": "",
         "tls": "",
-        "x": 180,
-        "y": 700,
+        "x": 1700,
+        "y": 140,
         "wires": [
             [
                 "841d43a3.dd624"
@@ -361,14 +332,15 @@
         "type": "function",
         "z": "e00b4175.b968",
         "name": "prepare response",
-        "func": "/* recreate message from input */\nvar response = {};\nresponse.req = msg.req;\nresponse.res = msg.res;\nresponse.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"step\": \"prepare reminder response\",\n    \"timestamp\": new Date().getTime()\n};\nresponse.ldm.process.trace.push(trace);\n\n/* determine tasklist */\nvar indexOfTaskList = 0;\n\nfor(var k in response.ldm.tasklist) {\n    if(response.ldm.tasklist[k].title === msg.ldm.header.list) {\n        break;\n    }\n    \n    indexOfTaskList++;\n}\n\nif (undefined === msg.ldm.process.errors) {\n    response.payload = {};\n    response.payload.tasks = msg.ldm.tasklist[indexOfTaskList].tasks;\n} else {\n   response.payload = msg.ldm.process.errors;\n}\n\nresponse.ldm.process.durationInMs = \n    msg.ldm.process.trace[msg.ldm.process.trace.length - 1].timestamp - msg.ldm.process.trace[0].timestamp;\n\nresponse.headers = {\n    \"Access-Control-Allow-Origin\": '*'\n};\n\nreturn response;",
+        "func": "/* recreate message from input */\nvar response = {};\nresponse.req = msg.req;\nresponse.res = msg.res;\nresponse.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"flow\": \"get items on reminder list\",\n    \"step\": \"prepare response\",\n    \"timestamp\": new Date().getTime()\n};\nresponse.ldm.process.trace.push(trace);\n\n/* determine tasklist */\nvar indexOfTaskList = 0;\n\nfor(var k in response.ldm.tasklist) {\n    if(response.ldm.tasklist[k].title === msg.ldm.header.list) {\n        break;\n    }\n    \n    indexOfTaskList++;\n}\n\nif (!msg.ldm.process.errors) {\n    response.payload = {};\n    response.payload.tasks = msg.ldm.tasklist[indexOfTaskList].tasks;\n} else {\n   response.payload = msg.ldm.process.errors;\n}\n\n/* determine process duration */\nresponse.ldm.process.durationInMs = \n    msg.ldm.process.trace[msg.ldm.process.trace.length - 1].timestamp - msg.ldm.process.trace[0].timestamp;\n\nresponse.headers = {\n    \"Access-Control-Allow-Origin\": '*'\n};\n\nreturn response;",
         "outputs": 1,
         "noerr": 0,
-        "x": 170,
-        "y": 860,
+        "x": 2490,
+        "y": 140,
         "wires": [
             [
-                "ce0b50ba.f8d448"
+                "49199cee.da6834",
+                "e16b0cec.c3d508"
             ]
         ]
     },
@@ -377,8 +349,8 @@
         "type": "http response",
         "z": "e00b4175.b968",
         "name": "get reminders on list response",
-        "x": 730,
-        "y": 1020,
+        "x": 2790,
+        "y": 140,
         "wires": []
     },
     {
@@ -386,26 +358,15 @@
         "type": "function",
         "z": "e00b4175.b968",
         "name": "save response to LDM",
-        "func": "/* recreate message from input */\nvar response = {};\nresponse.req = msg.req;\nresponse.res = msg.res;\nresponse.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"step\": \"save response to LDM\",\n    \"timestamp\": new Date().getTime()\n};\nresponse.ldm.process.trace.push(trace);\n\n/* determine tasklist */\nvar indexOfTaskList = 0;\n\nfor(var k in response.ldm.tasklist) {\n    if(response.ldm.tasklist[k].title === msg.ldm.header.list) {\n        break;\n    }\n    \n    indexOfTaskList++;\n}\n\nfor(var k in msg.payload.Reminders) {\n    var location = undefined;\n\n    /* push only tasks that belong to the list for which tasks are requested */\n    if(msg.payload.Reminders[k].pGuid === msg.ldm.tasklist[indexOfTaskList].guid) {\n\n        /* set location only if exists */\n        if(msg.payload.Reminders[k].alarms.length > 0 && \n           msg.payload.Reminders[k].alarms[0].structuredLocation !== undefined) {\n            location = {\n                \"name\": msg.payload.Reminders[k].alarms[0].structuredLocation.locationName,\n            \t\"address\": msg.payload.Reminders[k].alarms[0].structuredLocation.address,\n            \t\"latitude\": msg.payload.Reminders[k].alarms[0].structuredLocation.latitude,\n            \t\"longitude\": msg.payload.Reminders[k].alarms[0].structuredLocation.longitude,\n            \t\"proximity\": msg.payload.Reminders[k].alarms[0].proximity\n    \t    };\n        }\n    \n        response.ldm.tasklist[indexOfTaskList].tasks.push(\n            {\n                \"guid\": msg.payload.Reminders[k].guid,\n                \"title\": msg.payload.Reminders[k].title,\n                \"description\": msg.payload.Reminders[k].description,\n                \"priority\": msg.payload.Reminders[k].priority,\n                \"done\": msg.payload.Reminders[k].completedDate ? true : false,\n                \"alarm\": msg.payload.Reminders[k].dueDate,\n                \"location\": location ? location : null\n        });\n    }\n}\n\nreturn response;",
+        "func": "/* recreate message from input */\nvar response = {};\nresponse.req = msg.req;\nresponse.res = msg.res;\nresponse.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"flow\": \"get items on reminder list\",\n    \"step\": \"save response to LDM\",\n    \"timestamp\": new Date().getTime()\n};\nresponse.ldm.process.trace.push(trace);\n\n/* determine tasklist */\nvar indexOfTaskList = 0;\n\nfor(var k in response.ldm.tasklist) {\n    if(response.ldm.tasklist[k].title === msg.ldm.header.list) {\n        break;\n    }\n    \n    indexOfTaskList++;\n}\n\nfor(var k in msg.payload.Reminders) {\n    var location = undefined;\n\n    /* push only tasks that belong to the list for which tasks are requested */\n    if(msg.payload.Reminders[k].pGuid === msg.ldm.tasklist[indexOfTaskList].guid) {\n\n        /* set location only if exists */\n        if(msg.payload.Reminders[k].alarms.length > 0 && \n           msg.payload.Reminders[k].alarms[0].structuredLocation !== undefined) {\n            location = {\n                \"name\": msg.payload.Reminders[k].alarms[0].structuredLocation.locationName,\n            \t\"address\": msg.payload.Reminders[k].alarms[0].structuredLocation.address,\n            \t\"latitude\": msg.payload.Reminders[k].alarms[0].structuredLocation.latitude,\n            \t\"longitude\": msg.payload.Reminders[k].alarms[0].structuredLocation.longitude,\n            \t\"proximity\": msg.payload.Reminders[k].alarms[0].proximity\n    \t    };\n        }\n    \n        response.ldm.tasklist[indexOfTaskList].tasks.push(\n            {\n                \"guid\": msg.payload.Reminders[k].guid,\n                \"title\": msg.payload.Reminders[k].title,\n                \"description\": msg.payload.Reminders[k].description,\n                \"priority\": msg.payload.Reminders[k].priority,\n                \"done\": msg.payload.Reminders[k].completedDate ? true : false,\n                \"alarm\": msg.payload.Reminders[k].dueDate,\n                \"location\": location ? location : null\n        });\n    }\n}\n\nreturn response;",
         "outputs": 1,
         "noerr": 0,
-        "x": 180,
-        "y": 780,
+        "x": 2220,
+        "y": 140,
         "wires": [
             [
-                "4d6260a9.e2ffd"
-            ]
-        ]
-    },
-    {
-        "id": "3d7f76f4.8a729a",
-        "type": "subflow:747253ec.210a54",
-        "z": "e00b4175.b968",
-        "x": 140,
-        "y": 300,
-        "wires": [
-            [
-                "506f28e6.8f6f1"
+                "c5d7dfba.d394c",
+                "3eaadc09.2a18e4"
             ]
         ]
     },
@@ -414,14 +375,11 @@
         "type": "subflow:fd4d19b8.ff0d28",
         "z": "e00b4175.b968",
         "name": "",
-        "x": 420,
-        "y": 380,
+        "x": 900,
+        "y": 140,
         "wires": [
             [
                 "3e542f0b.eae5c"
-            ],
-            [
-                "49199cee.da6834"
             ]
         ]
     },
@@ -429,51 +387,11 @@
         "id": "841d43a3.dd624",
         "type": "subflow:fd4d19b8.ff0d28",
         "z": "e00b4175.b968",
-        "x": 420,
-        "y": 700,
+        "x": 1960,
+        "y": 140,
         "wires": [
             [
                 "134317b5.4501b8"
-            ],
-            [
-                "49199cee.da6834"
-            ]
-        ]
-    },
-    {
-        "id": "fb783af4.930e58",
-        "type": "subflow:747253ec.210a54",
-        "z": "e00b4175.b968",
-        "name": "",
-        "x": 400,
-        "y": 540,
-        "wires": [
-            [
-                "75672673.3298f8"
-            ]
-        ]
-    },
-    {
-        "id": "4d6260a9.e2ffd",
-        "type": "subflow:747253ec.210a54",
-        "z": "e00b4175.b968",
-        "x": 400,
-        "y": 780,
-        "wires": [
-            [
-                "c5d7dfba.d394c"
-            ]
-        ]
-    },
-    {
-        "id": "ce0b50ba.f8d448",
-        "type": "subflow:747253ec.210a54",
-        "z": "e00b4175.b968",
-        "x": 400,
-        "y": 860,
-        "wires": [
-            [
-                "49199cee.da6834"
             ]
         ]
     },
@@ -481,9 +399,9 @@
         "id": "36d4e1f0.998dee",
         "type": "comment",
         "z": "e00b4175.b968",
-        "name": "version 1.1",
-        "info": "version 1.0: initial version\nversion 1.1: added check for appleId and password in 'save input to LDM'\n             added logging and exception handling",
-        "x": 140,
+        "name": "version 1.2",
+        "info": "version 1.0: initial version\nversion 1.1: added check for appleId and password in 'save input to LDM'\n             added logging and exception handling\nversion 1.2: refactoring of error handling",
+        "x": 100,
         "y": 60,
         "wires": []
     },
@@ -493,11 +411,11 @@
         "z": "e00b4175.b968",
         "name": "call session cache",
         "method": "POST",
-        "ret": "txt",
+        "ret": "obj",
         "url": "http://127.0.0.1:1880/icloud/login",
         "tls": "",
-        "x": 170,
-        "y": 380,
+        "x": 650,
+        "y": 140,
         "wires": [
             [
                 "a87d5929.672dd"
@@ -509,26 +427,15 @@
         "type": "function",
         "z": "e00b4175.b968",
         "name": "save response to LDM",
-        "func": "var output = {};\noutput.req = msg.req;\noutput.res = msg.res;\noutput.ldm = {\n    \"process\": msg.ldm.process,\n    \"header\": msg.payload.header,\n    \"tasklist\": msg.payload.tasklist\n};\n\n/* restore list from original request */\noutput.ldm.header.list = msg.ldm.header.list;\n\n/* set values for tracing */\nvar trace = {\n    \"step\": \"save response to LDM\",\n    \"timestamp\": new Date().getTime()\n};\noutput.ldm.process.trace.push(trace);\n\nreturn output;",
+        "func": "var output = {};\noutput.req = msg.req;\noutput.res = msg.res;\noutput.ldm = {\n    \"process\": msg.ldm.process,\n    \"header\": msg.payload.header,\n    \"tasklist\": msg.payload.tasklist\n};\n\n/* restore list from original request */\noutput.ldm.header.list = msg.ldm.header.list;\n\n/* set values for tracing */\nvar trace = {\n    \"flow\": \"get items on reminder list\",\n    \"step\": \"save response to LDM\",\n    \"timestamp\": new Date().getTime()\n};\noutput.ldm.process.trace.push(trace);\n\nreturn output;",
         "outputs": 1,
         "noerr": 0,
-        "x": 180,
-        "y": 460,
+        "x": 1160,
+        "y": 140,
         "wires": [
             [
-                "275bb24.581424e"
-            ]
-        ]
-    },
-    {
-        "id": "275bb24.581424e",
-        "type": "subflow:747253ec.210a54",
-        "z": "e00b4175.b968",
-        "x": 400,
-        "y": 460,
-        "wires": [
-            [
-                "4ef14379.67f284"
+                "4ef14379.67f284",
+                "4bb62a7e.ca94dc"
             ]
         ]
     },
@@ -538,64 +445,82 @@
         "z": "e00b4175.b968",
         "name": "",
         "scope": null,
-        "x": 140,
-        "y": 940,
+        "x": 1840,
+        "y": 400,
         "wires": [
             [
-                "ccff0b80.ae9358"
+                "2c15e92c.97d9e6"
             ]
         ]
     },
     {
-        "id": "ccff0b80.ae9358",
-        "type": "function",
+        "id": "2c15e92c.97d9e6",
+        "type": "subflow:fd4d19b8.ff0d28",
         "z": "e00b4175.b968",
-        "name": "set exception",
-        "func": "var response = {};\nresponse.req = null; //???\nresponse.res = null; //???\nresponse.ldm = null; //???\nresponse.payload = {};\nresponse.payload.errors = [];\n\nvar error = {\n    \"status\": 500,\n    \"source\": \"set exception\",\n    \"title\": msg.error.message,\n    \"detail\": msg.error.message\n};\n\nresponse.payload.errors.push(error);\n\nresponse.statusCode = 500;\n\n//node.error(msg.error.source.name);\n//node.error(msg.error.message);\n\nreturn response;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 160,
-        "y": 1020,
+        "x": 2120,
+        "y": 400,
         "wires": [
-            [
-                "317ece99.3014c2"
-            ]
+            []
         ]
     },
     {
-        "id": "317ece99.3014c2",
+        "id": "5772a902.77a3f8",
+        "type": "subflow:fd4d19b8.ff0d28",
+        "z": "e00b4175.b968",
+        "x": 640,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "51061bcf.e69eec",
+        "type": "subflow:fd4d19b8.ff0d28",
+        "z": "e00b4175.b968",
+        "x": 1680,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "53b561af.ce0c48",
         "type": "subflow:747253ec.210a54",
         "z": "e00b4175.b968",
-        "x": 400,
-        "y": 1020,
-        "wires": [
-            [
-                "49199cee.da6834"
-            ]
-        ]
+        "x": 620,
+        "y": 220,
+        "wires": []
     },
     {
-        "id": "fddbda2d.9a7978",
+        "id": "4bb62a7e.ca94dc",
         "type": "subflow:747253ec.210a54",
         "z": "e00b4175.b968",
-        "x": 400,
-        "y": 227,
-        "wires": [
-            [
-                "49199cee.da6834"
-            ]
-        ]
+        "x": 1400,
+        "y": 220,
+        "wires": []
     },
     {
-        "id": "f4e48ca7.91a438",
+        "id": "4179b738.83f948",
         "type": "subflow:747253ec.210a54",
         "z": "e00b4175.b968",
-        "x": 400,
-        "y": 620,
-        "wires": [
-            [
-                "49199cee.da6834"
-            ]
-        ]
+        "x": 1660,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "3eaadc09.2a18e4",
+        "type": "subflow:747253ec.210a54",
+        "z": "e00b4175.b968",
+        "x": 2460,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "e16b0cec.c3d508",
+        "type": "subflow:747253ec.210a54",
+        "z": "e00b4175.b968",
+        "x": 2720,
+        "y": 220,
+        "wires": []
     }
 ]
