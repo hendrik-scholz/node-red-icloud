@@ -182,8 +182,8 @@
         "type": "function",
         "z": "fd4d19b8.ff0d28",
         "name": "check",
-        "func": "/* error codes */\nvar errorCodes = {\n    '7' : {'title': 'Invalid credentials', 'detail': 'Invalid Apple ID'},\n    '1' : {'title': 'Invalid credentials',  'detail': 'Invalid password'},\n    'Error: getaddrinfo EAI_AGAIN p42-remindersws.icloud.com:443': \n        {'title': 'Connection error',  'detail': 'Unable to connect to iCloud'},\n    'Error: getaddrinfo EAI_AGAIN setup.icloud.com:443': \n        {'title': 'Connection error',  'detail': 'Unable to connect to iCloud'}\n};\n\n/* function to create error messages */\nfunction createErrorMessage(status, source, title, detail) {\n    var response = {};\n    response.statusCode = status;\n    response.req = msg.req;\n    response.res = msg.res;\n    response.ldm = msg.ldm;\n\n    response.ldm.process.finished = true;\n\n    var error = {\n        \"status\": status,\n        \"source\": { \"pointer\": source },\n        \"title\": errorCodes[detail] ? errorCodes[detail].title : title,\n        \"detail\": errorCodes[detail] ? errorCodes[detail].detail : detail\n    };\n\n    var errors = [];\n    errors.push(error);\n    \n    response.payload = {\n        \"errors\": errors\n    };\n\n    return response;\n}\n\nif (msg.statusCode === 200) {\n    /* HTTP status code 200 OK */\n    \n    /* recreate message from input */\n    var responseOk = {};\n    responseOk.req = msg.req;\n    responseOk.res = msg.res;\n    responseOk.headers = msg.headers;\n    responseOk.payload = msg.payload;\n    responseOk.ldm = msg.ldm;\n    \n    /* check whether payload is filled */\n    if (responseOk.payload !== '') {\n        return[responseOk, null];\n    } else {\n        /* Since a JSON object cannot be created from\n           an empty string, the message is passed on to\n           terminal two. */\n        responseOk.req = msg.req;\n        responseOk.res = msg.res;\n        responseOk.ldm = msg.ldm;\n        \n        return[responseOk, null];\n    }\n} else if(!msg.statusCode &&\n          Number.isInteger(msg.statusCode) &&\n          msg.statusCode !== 200) {\n    /* HTTP status codes */\n       \n    /* \n     * elements:\n     *\n     * msg.payload, e.g. \"{\"error\":7}\"\n     * msg.statusCode, e.g. 403\n     * msg.responseUrl, e.g. \"https://setup.icloud.com/setup/ws/1/login\"\n     */\n     if(msg.payload.errors) {\n        /* in case an errors object exists ... */ \n        return[null, msg];\n     } else {\n         var errorResponse = createErrorMessage(\n                                msg.statusCode,\n                                msg.responseUrl,\n                                msg.payload,\n                                msg.payload.error);\n\n         return[null, errorResponse];\n     }\n} else if(!msg.error) {\n    /* error object - mostly from catch node */\n\n    /* \n     * elements:\n     *\n     * msg.error.message, e.g. \"ReferenceError: a is not defined (line 4, col 4)\"\n     * msg.error.source.id, e.g. \"60c342f9.7acd6c\"\n     * msg.error.source.type, e.g. \"function\"\n     * msg.error.source.name, e.g. \"set message\"\n     * msg.error.source.count, e.g. 1\n     */\n    var errorResponse = createErrorMessage(\n                            500,\n                            msg.error.source.type + ' ' + msg.error.source.name,\n                            'Error in ' + msg.error.source.type + ' ' + msg.error.source.name,\n                            msg.error.message);\n\n    return[null, errorResponse];\n} else if (!msg.statusCode &&\n           isNaN(msg.statusCode)) {\n    /* do nothing */\n} else {\n    /* something unexpected happened */\n    var errorResponse = createErrorMessage(\n                            500,\n                            'Error handling',\n                            'Unexpected',\n                            'An error that has not been handled properly has occurred. ' +\n                            'Analyse the error and provide a proper error handling for this case.');\n\n    return[null, errorResponse];\n}",
-        "outputs": "2",
+        "func": "/* error codes */\nvar errorCodes = {\n    '7' : {'title': 'Invalid credentials', 'detail': 'Invalid Apple ID'},\n    '1' : {'title': 'Invalid credentials',  'detail': 'Invalid password'},\n    'Error: getaddrinfo EAI_AGAIN p42-remindersws.icloud.com:443': \n        {'title': 'Connection error',  'detail': 'Unable to connect to iCloud'},\n    'Error: getaddrinfo EAI_AGAIN setup.icloud.com:443': \n        {'title': 'Connection error',  'detail': 'Unable to connect to iCloud'}\n};\n\n/* function to create error messages */\nfunction createErrorMessage(status, source, title, detail) {\n    var response = {};\n    response.statusCode = status;\n    response.req = msg.req;\n    response.res = msg.res;\n    response.ldm = msg.ldm;\n\n    response.ldm.process.finished = true;\n\n    var error = {\n        \"status\": status,\n        \"source\": { \"pointer\": source },\n        \"title\": errorCodes[detail] ? errorCodes[detail].title : title,\n        \"detail\": errorCodes[detail] ? errorCodes[detail].detail : detail\n    };\n\n    var errors = [];\n    errors.push(error);\n    \n    response.payload = {\n        \"errors\": errors\n    };\n\n    return response;\n}\n\nif (msg.statusCode === 200) {\n    /* HTTP status code 200 OK */\n    \n    /* recreate message from input */\n    var responseOk = {};\n    responseOk.req = msg.req;\n    responseOk.res = msg.res;\n    responseOk.headers = msg.headers;\n    responseOk.payload = msg.payload;\n    responseOk.ldm = msg.ldm;\n    \n    /* check whether payload is filled */\n    if (responseOk.payload !== '') {\n        return[responseOk, null, null];\n    } else {\n        /* Since a JSON object cannot be created from\n           an empty string, the message is passed on to\n           terminal two. */\n        responseOk.req = msg.req;\n        responseOk.res = msg.res;\n        responseOk.ldm = msg.ldm;\n        \n        return[responseOk, null, null];\n    }\n} else if(msg.statusCode &&\n          Number.isInteger(msg.statusCode) &&\n          msg.statusCode !== 200) {\n    /* HTTP status codes */\n\n    /* \n     * elements:\n     *\n     * msg.payload, e.g. \"{\"error\":7}\"\n     * msg.statusCode, e.g. 403\n     * msg.responseUrl, e.g. \"https://setup.icloud.com/setup/ws/1/login\"\n     */\n     if(msg.payload.errors) {\n        /* in case an errors object exists ... */ \n        return[null, msg];\n     } else {\n         var errorResponse = createErrorMessage(\n                                msg.statusCode,\n                                msg.responseUrl,\n                                msg.payload,\n                                msg.payload.error);\n\n         return[null, errorResponse, null];\n     }\n} else if(msg.error) {\n    /* error object - mostly from catch node */\n\n    /* \n     * elements:\n     *\n     * msg.error.message, e.g. \"ReferenceError: a is not defined (line 4, col 4)\"\n     * msg.error.source.id, e.g. \"60c342f9.7acd6c\"\n     * msg.error.source.type, e.g. \"function\"\n     * msg.error.source.name, e.g. \"set message\"\n     * msg.error.source.count, e.g. 1\n     */\n    var errorResponse = createErrorMessage(\n                            500,\n                            msg.error.source.type + ' ' + msg.error.source.name,\n                            'Error in ' + msg.error.source.type + ' ' + msg.error.source.name,\n                            msg.error.message);\n\n    return[null, errorResponse, null];\n} else if (!msg.statusCode &&\n           isNaN(msg.statusCode)) {\n    /* do nothing */\n} else {\n    /* something unexpected happened */\n    var errorResponse = createErrorMessage(\n                            500,\n                            'Error handling',\n                            'Unexpected',\n                            'An error that has not been handled properly has occurred. ' +\n                            'Analyse the error and provide a proper error handling for this case.');\n\n    return[null, null, errorResponse];\n}",
+        "outputs": "3",
         "noerr": 0,
         "x": 210,
         "y": 60,
@@ -194,6 +194,9 @@
             [
                 "3b615dca.4c3432",
                 "2c260c2.371a874"
+            ],
+            [
+                "3b615dca.4c3432"
             ]
         ]
     },
@@ -203,7 +206,7 @@
         "z": "fd4d19b8.ff0d28",
         "name": "logging",
         "x": 420,
-        "y": 140,
+        "y": 220,
         "wires": []
     },
     {
@@ -238,7 +241,7 @@
         "z": "fd4d19b8.ff0d28",
         "name": "",
         "x": 410,
-        "y": 220,
+        "y": 140,
         "wires": []
     },
     {
@@ -522,7 +525,7 @@
         "name": "",
         "scope": null,
         "x": 100,
-        "y": 700,
+        "y": 220,
         "wires": [
             [
                 "9b75e192.6cc668"
@@ -534,7 +537,7 @@
         "type": "function",
         "z": "d685ffcb.a30c08",
         "name": "clear login cache",
-        "func": "/* set values for tracing */\nvar trace = {\n    \"flow\": \"session cache\",\n    \"step\": \"clear login cache\",\n    \"timestamp\": new Date().getTime()\n};\nresponse.ldm.process.trace.push(trace);\n\nvar sessionCache = [];\nflow.set('sessionCache', sessionCache);\n\n/* determine process duration */\nresponse.ldm.process.durationInMs = \n    msg.ldm.process.trace[msg.ldm.process.trace.length - 1].timestamp - msg.ldm.process.trace[0].timestamp;\n\nreturn msg;",
+        "func": "/* recreate message from input */\nvar response = {};\nresponse.req = msg.req;\nresponse.res = msg.res;\nresponse.ldm = msg.ldm;\n\n/* set values for tracing */\nvar trace = {\n    \"flow\": \"session cache\",\n    \"step\": \"clear login cache\",\n    \"timestamp\": new Date().getTime()\n};\nresponse.ldm.process.trace.push(trace);\n\nvar sessionCache = [];\nflow.set('sessionCache', sessionCache);\n\n/* determine process duration */\nresponse.ldm.process.durationInMs = \n    msg.ldm.process.trace[msg.ldm.process.trace.length - 1].timestamp - msg.ldm.process.trace[0].timestamp;\n\nreturn response;",
         "outputs": 1,
         "noerr": 0,
         "x": 1210,
@@ -579,8 +582,8 @@
         "type": "subflow:fd4d19b8.ff0d28",
         "z": "d685ffcb.a30c08",
         "name": "",
-        "x": 340,
-        "y": 700,
+        "x": 320,
+        "y": 220,
         "wires": [
             []
         ]
