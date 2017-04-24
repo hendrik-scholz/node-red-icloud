@@ -108,8 +108,9 @@ Set the Apple ID and the password of your iCloud account in one of the following
 
 **Request**
 
-*Request method: GET
-*Endpoint: /reminderlists
+* Request method: GET
+
+* Endpoint: /reminderlists
 
 | parameter  | description |
 | ---------- | ----------- |
@@ -120,8 +121,9 @@ Set the Apple ID and the password of your iCloud account in one of the following
 
 **Request**
 
-*Request method: GET
-*Endpoint: /reminder/:list
+* Request method: GET
+
+* Endpoint: /reminder/:list
 
 | parameter  | description |
 | ---------- | ----------- |
