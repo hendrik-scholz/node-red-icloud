@@ -14,15 +14,26 @@ The Node-RED flow was developed on the following environment.
 * Node.js version: v6.9.5
 * Node-RED version: v0.16.2
 
+The SoapUI project containing the test cases was created with SoapUI 5.3.0.
+
 To create reminders in iCloud and synchronize them with your iPhone you need an iCloud account.
 
 ## Features
 
-Currently, the following use case is supported.
+Currently, the following use cases are supported.
 
-You can create reminders for a specific date and/or geofence. Set the Apple ID and the password of your iCloud account in one of the following requests and send the request to the create-reminder flow. A reminder will be generated in your iCloud account. If you have configured your iPhone to synchronize with iCloud, the created reminder will be sent to your phone.
+* You can create reminders for a specific date and/or geofence. A reminder will be generated in your iCloud account. If you have configured your iPhone to synchronize with iCloud, the created reminder will be sent to your phone.
+
+* You can retrieve all reminder lists for your iCloud account.
+
+* You can retrieve all reminders for a specific reminder list.
+
+### Create Reminders
 
 **Request**
+
+Request method: POST
+Endpoint: /reminders
 
 | field      | description |
 | ---------- | ----------- |
@@ -41,6 +52,8 @@ You can create reminders for a specific date and/or geofence. Set the Apple ID a
 
 **Sample requests**
 
+Set the Apple ID and the password of your iCloud account in one of the following requests and send the request to the create-reminder flow.
+
 *date only*
 
 ```
@@ -51,7 +64,7 @@ You can create reminders for a specific date and/or geofence. Set the Apple ID a
 "priority":1,
 "title":"Get a birthday present for Lisa",
 "description":"Call Robert to ask what Lisa likes.",
-"alarm":"2017-01-01T00:00:00"
+"alarm":"2018-01-01T00:00:00"
 }
 ```
 
@@ -88,9 +101,33 @@ You can create reminders for a specific date and/or geofence. Set the Apple ID a
 "locationName":"Harrods",
 "latitude":"51.4992917",
 "longitude":"-0.162811",
-"alarm":"2017-01-01T00:00:00"
+"alarm":"2018-01-01T00:00:00"
 }
 ```
+### Get Reminder Lists
+
+**Request**
+
+Request method: GET
+Endpoint: /reminderlists
+
+| field      | description |
+| ---------- | ----------- |
+|appleId|the Apple ID of your iCloud account|
+|password|the password of your iCloud account|
+
+### Get Reminders from List
+
+**Request**
+
+Request method: GET
+Endpoint: /reminder/:list
+
+| field      | description |
+| ---------- | ----------- |
+|list|name of the list to retrieve the reminders from|
+|appleId|the Apple ID of your iCloud account|
+|password|the password of your iCloud account|
 
 ## Configuration
 
@@ -99,3 +136,5 @@ Logging to a file is turned off by default. Open the logging subflow to set a fi
 ## Test
 
 A SoapUI project can be found in the test folder to send test requests to the service running on your local machine. Set the your Apple ID and password in the custom properties on project level before running a test.
+
+A load test can be found in the test suite 'RaspberryPi' of the SoapUI project. Configure the load test by setting the endpoint and parameters before running the test.
