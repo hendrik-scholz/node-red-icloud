@@ -32,8 +32,9 @@ Currently, the following use cases are supported.
 
 **Request**
 
-Request method: POST
-Endpoint: /reminders
+* Request method: POST
+
+* Endpoint: /reminders
 
 | field      | description |
 | ---------- | ----------- |
