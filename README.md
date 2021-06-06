@@ -2,6 +2,7 @@
 
 node-red-icloud is a project to access iCloud services through Node-RED flows.
 
+This project is replaced by https://github.com/hendrik-scholz/icloud-api.
 ## Requirements
 
 In order to use the Node-RED flows you need ...
